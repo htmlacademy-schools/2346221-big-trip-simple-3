@@ -16,9 +16,8 @@ const generateDescription = () => {
     'Nunc fermentum tortor ac porta dapibus.',
     'In rutrum ac purus sit amet tempus.',
   ];
-  const randomIndex = getRandomInt(0, descriptions.length - 1);
 
-  return descriptions[randomIndex];
+  return getRandomArrayElement(descriptions);
 };
 
 const generatePhotos = () => {
@@ -26,7 +25,7 @@ const generatePhotos = () => {
   const pictures = new Array(picturesNumber);
   for (let i = 0; i < pictures.length; ++i) {
     pictures[i] = {
-      src: `http://picsum.photos/248/152?r=${getRandomInt(0, 5)}`,
+      src: `http://picsum.photos/248/152?r=${getRandomInt(0, 100)}`,
       description: generateDescription(),
     };
   }
@@ -57,10 +56,11 @@ const destinationNames = [
   'Orel',
 ];
 
-const destinations = new Array();
+const destinations = {};
 destinationNames.forEach((name, index) => {
-  destinations[index] = {
-    id: index + 1,
+  const id = index + 1;
+  destinations[`${id}`] = {
+    id,
     description: generateDescription(),
     name,
     pictures: generatePhotos(),
@@ -68,10 +68,10 @@ destinationNames.forEach((name, index) => {
 });
 
 const generateOffers = () => {
-  const offers = new Array();
-  const offersNumber = getRandomInt(5, 11);
-  for (let id = 1; id < offersNumber + 1; ++id) {
-    offers[id] = {
+  const offers = {};
+  const offersNumber = getRandomInt(2, 5);
+  for (let id = 1; id <= offersNumber; ++id) {
+    offers[`${id}`] = {
       id,
       title: `Offer ${id}`,
       price: getRandomInt(1, 100),
@@ -80,7 +80,7 @@ const generateOffers = () => {
   return offers;
 };
 
-const getRandomDestination = () => getRandomArrayElement(destinations);
+const getRandomDestination = () => destinations[`${getRandomInt(1, destinationNames.length)}`];
 
 const generateTripEvents = (eventsNumber) => {
   const events = new Array(eventsNumber);

@@ -25,7 +25,7 @@ const createDestinationTemplate = (destination) => {
 
 const createOffersTemplate = (offers) => {
   let template = '';
-  offers.forEach(({id, title, price}) => {
+  Object.values(offers).forEach(({id, title, price}) => {
     template += `
             <div class="event__offer-selector">
               <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="${title}">
