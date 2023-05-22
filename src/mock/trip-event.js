@@ -26,7 +26,7 @@ const generatePhotos = () => {
   const pictures = new Array(picturesNumber);
   for (let i = 0; i < pictures.length; ++i) {
     pictures[i] = {
-      src: `http://picsum.photos/248/152?r${getRandomInt(0, 5)}`,
+      src: `http://picsum.photos/248/152?r=${getRandomInt(0, 5)}`,
       description: generateDescription(),
     };
   }

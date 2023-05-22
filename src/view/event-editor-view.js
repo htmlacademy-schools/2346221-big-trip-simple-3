@@ -21,7 +21,7 @@ const createDestinationTemplate = (destination) => {
         </div>
       </section>
   `;
-}
+};
 
 const createOffersTemplate = (offers) => {
   let template = '';
