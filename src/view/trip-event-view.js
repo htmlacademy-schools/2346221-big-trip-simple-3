@@ -3,7 +3,7 @@ import BaseView from './base-view.js';
 
 const createOffersTemplate = (offers) => {
   let template = '';
-  offers.forEach(({title, price}) => {
+  Object.values(offers).forEach(({title, price}) => {
     template += `
     <li class="event__offer">
       <span class="event__offer-title">${title}</span>
