@@ -10,14 +10,14 @@ const createElementWrapperTemplate = () => `
 `;
 
 class TripEventsListView extends BaseView {
-  getTemplate() {
+  get template() {
     return createTripEventsListTemplate();
   }
 
   addEvent(element) {
     const eventItem = createElement(createElementWrapperTemplate());
     render(element, eventItem);
-    this.getElement().append(eventItem);
+    this.element.append(eventItem);
   }
 }
 

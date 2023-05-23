@@ -30,7 +30,7 @@ const createEventListSortingTemplate = () => `
 `;
 
 class EventListSortingView extends BaseView {
-  getTemplate() {
+  get template() {
     return createEventListSortingTemplate();
   }
 }

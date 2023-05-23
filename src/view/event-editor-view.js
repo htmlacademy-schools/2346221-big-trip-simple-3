@@ -177,13 +177,15 @@ const createEventEditorTemplate = (tripInfo) => {
 };
 
 class EventEditorView extends BaseView {
+  #info = null;
+
   constructor(tripInfo) {
     super();
-    this.info = tripInfo;
+    this.#info = tripInfo;
   }
 
-  getTemplate() {
-    return createEventEditorTemplate(this.info);
+  get template() {
+    return createEventEditorTemplate(this.#info);
   }
 }
 

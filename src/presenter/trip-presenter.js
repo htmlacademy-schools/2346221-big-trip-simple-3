@@ -5,21 +5,24 @@ import TripEventView from '../view/trip-event-view.js';
 import EventListSortingView from '../view/event-list-sorting-view.js';
 
 class TripPresenter {
-  tripEventsList = new TripEventsListView();
+  #tripEventsList = new TripEventsListView();
+  #container = null;
+  #tripEventsModel = null;
+  #tripTasks = [];
 
   init(container, tripEventsModel) {
-    this.container = container;
-    this.tripEventsModel = tripEventsModel;
-    this.tripTasks = [...this.tripEventsModel.getTripEvents()];
+    this.#container = container;
+    this.#tripEventsModel = tripEventsModel;
+    this.#tripTasks = [...this.#tripEventsModel.tripEvents];
 
-    render(new EventListSortingView(), this.container);
-    render(this.tripEventsList, this.container);
+    render(new EventListSortingView(), this.#container);
+    render(this.#tripEventsList, this.#container);
     // добавляем окно для изменения пункта
-    this.tripEventsList.addEvent(new EventEditorView(this.tripTasks[0]));
+    this.#tripEventsList.addEvent(new EventEditorView(this.#tripTasks[0]));
 
-    for (let i = 1; i < this.tripTasks.length; i++) {
+    for (let i = 1; i < this.#tripTasks.length; i++) {
       // добавляем пункты путешествия
-      this.tripEventsList.addEvent(new TripEventView(this.tripTasks[i]));
+      this.#tripEventsList.addEvent(new TripEventView(this.#tripTasks[i]));
     }
   }
 }
