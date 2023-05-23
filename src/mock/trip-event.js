@@ -80,6 +80,25 @@ const generateOffers = () => {
   return offers;
 };
 
+const OFFERS_BY_TYPE = {};
+TRIP_EVENT_TYPES.forEach((name) => {
+  OFFERS_BY_TYPE[`${name}`] = {
+    'type': name,
+    'offers': generateOffers(),
+  };
+});
+
+const generateOffersIds = (type) => {
+  const offersIds = new Array();
+  const offersMaxNumber = Object.keys(OFFERS_BY_TYPE[`${type}`].offers).length;
+  for (let i = 1; i <= offersMaxNumber; ++i) {
+    if (getRandomInt(0, 1)){
+      offersIds.push(i);
+    }
+  }
+  return offersIds;
+};
+
 const getRandomDestination = () => destinations[`${getRandomInt(1, destinationNames.length)}`];
 
 const generateTripEvents = (eventsNumber) => {
@@ -87,17 +106,18 @@ const generateTripEvents = (eventsNumber) => {
   const currentDate = dayjs();
   for (let i = 0; i < eventsNumber; ++i) {
     const { dateFrom, dateTo } = generateRandomDates(currentDate);
+    const type = generateRandomEventType();
     events[i] = {
       id: i + 1,
-      type: generateRandomEventType(),
+      type,
       dateFrom,
       dateTo,
       basePrice: getRandomInt(1, 1000),
-      offers: generateOffers(),
+      offers: generateOffersIds(type),
       destination: getRandomDestination(),
     };
   }
   return events;
 };
 
-export { generateTripEvents };
+export { generateTripEvents, OFFERS_BY_TYPE };

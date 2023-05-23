@@ -1,4 +1,5 @@
 import { getFullDataTime } from '../utils.js';
+import { OFFERS_BY_TYPE } from '../mock/trip-event.js';
 import BaseView from './base-view.js';
 
 const createDestinationTemplate = (destination) => {
@@ -23,10 +24,23 @@ const createDestinationTemplate = (destination) => {
   `;
 };
 
-const createOffersTemplate = (offers) => {
+const createOffersTemplate = (type, offers) => {
   let template = '';
-  Object.values(offers).forEach(({id, title, price}) => {
-    template += `
+  const allOffers = OFFERS_BY_TYPE[`${type}`].offers;
+  Object.values(allOffers).forEach(({id, title, price}) => {
+    if (offers.includes(id)) {
+      template += `
+            <div class="event__offer-selector">
+              <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="${title}" checked>
+              <label class="event__offer-label" for="${id}">
+                <span class="event__offer-title">${title}</span>
+                &plus;&euro;&nbsp;
+                <span class="event__offer-price">${price}</span>
+              </label>
+            </div>
+    `;
+    } else {
+      template += `
             <div class="event__offer-selector">
               <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="${title}">
               <label class="event__offer-label" for="${id}">
@@ -36,6 +50,7 @@ const createOffersTemplate = (offers) => {
               </label>
             </div>
     `;
+    }
   });
   return template;
 };
@@ -152,7 +167,7 @@ const createEventEditorTemplate = (tripInfo) => {
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-          ${createOffersTemplate(offers)}
+          ${createOffersTemplate(type, offers)}
         </div>
       </section>
       ${createDestinationTemplate(destination)}
