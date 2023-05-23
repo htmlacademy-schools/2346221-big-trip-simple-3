@@ -1,20 +1,20 @@
 import {createElement} from '../render.js';
 
 class BaseView {
-  #element = null;
+  _element = null;
   get template() {
     throw new Error('There is no template');
   }
 
   get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
+    if (!this._element) {
+      this._element = createElement(this.template);
     }
-    return this.#element;
+    return this._element;
   }
 
   removeElement() {
-    this.#element = null;
+    this._element = null;
   }
 }
 

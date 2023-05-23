@@ -17,7 +17,7 @@ class TripEventsListView extends BaseView {
   addEvent(element) {
     const eventItem = createElement(createElementWrapperTemplate());
     render(element, eventItem);
-    this.element.append(eventItem);
+    this._element.append(eventItem);
   }
 }
 
