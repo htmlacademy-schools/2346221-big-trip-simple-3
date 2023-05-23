@@ -3,25 +3,72 @@ import TripEventsListView from '../view/trip-events-list.js';
 import EventEditorView from '../view/event-editor-view.js';
 import TripEventView from '../view/trip-event-view.js';
 import EventListSortingView from '../view/event-list-sorting-view.js';
+import { createOnEscKeydownFunction } from '../utils.js';
 
 class TripPresenter {
-  tripEventsList = new TripEventsListView();
+  #tripEventsList = new TripEventsListView();
+  #container;
+  #tripEventsModel;
+  #tripTasks;
 
   init(container, tripEventsModel) {
-    this.container = container;
-    this.tripEventsModel = tripEventsModel;
-    this.tripTasks = [...this.tripEventsModel.getTripEvents()];
+    this.#container = container;
+    this.#tripEventsModel = tripEventsModel;
+    // получаем пункты для отрисовки
+    this.#tripTasks = [...this.#tripEventsModel.tripEvents];
 
-    render(new EventListSortingView(), this.container);
-    render(this.tripEventsList, this.container);
-    // добавляем окно для изменения пункта
-    this.tripEventsList.addEvent(new EventEditorView(this.tripTasks[0]));
+    render(new EventListSortingView(), this.#container);
+    render(this.#tripEventsList, this.#container);
 
-    for (let i = 1; i < this.tripTasks.length; i++) {
-      // добавляем пункты путешествия
-      this.tripEventsList.addEvent(new TripEventView(this.tripTasks[i]));
+    for (let i = 0; i < this.#tripTasks.length; i++) {
+      this.#renderTask(this.#tripTasks[i]);
     }
   }
+
+  #renderTask = (task) => {
+    const taskComponent = new TripEventView(task);
+    const taskEditorComponent = new EventEditorView(task);
+    let onEditorEscKeydownListener;
+
+    const replaceFormToTask = () => {
+      this.#tripEventsList.element.replaceChild(taskComponent.element, taskEditorComponent.element);
+      document.removeEventListener('keydown', onEditorEscKeydownListener);
+    };
+
+    const replaceTaskToForm = () => {
+      this.#tripEventsList.element.replaceChild(taskEditorComponent.element, taskComponent.element);
+    };
+
+    const removeTask = () => {
+      this.#tripEventsList.element.removeChild(taskEditorComponent.element);
+      document.removeEventListener('keydown', onEditorEscKeydownListener);
+    };
+    // нажатие на стрелку, чтобы открыть форму
+    taskComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      if (!this.#tripEventsList.isNewFormOrEditorOpen()) {
+        replaceTaskToForm();
+        onEditorEscKeydownListener = createOnEscKeydownFunction(document, replaceFormToTask);
+      }
+    });
+    // нажатие на кнопку Save
+    taskEditorComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceFormToTask();
+    });
+    // нажатие на стрелку, чтобы закрыть форму
+    taskEditorComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceFormToTask();
+    });
+
+    // нажатие на кнопку Delete
+    taskEditorComponent.element.querySelector('.event__reset-btn').addEventListener('click', () => {
+      removeTask();
+      taskEditorComponent.removeElement();
+      taskComponent.removeElement();
+    });
+
+    render(taskComponent, this.#tripEventsList.element);
+  };
 }
 
 export default TripPresenter;
