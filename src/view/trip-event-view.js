@@ -38,6 +38,7 @@ const createTripEventTemplate = (tripInfo) => {
     ? destination.name
     : 'No destination';
   return `
+  <li class="trip-events__item">
     <div class="event">
       <time class="event__date" datetime="2019-03-18">${tripDate}</time>
       <div class="event__type">
@@ -62,6 +63,7 @@ const createTripEventTemplate = (tripInfo) => {
         <span class="visually-hidden">Open event</span>
       </button>
     </div>
+  </li>
   `;
 };
 

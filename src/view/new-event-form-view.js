@@ -10,7 +10,7 @@ const createDestinationTemplate = (destination) => {
     picturesSection += `<img class="event__photo" src="${src}" alt="${photoDescription}">`;
   });
 
-  return (destination) ? `
+  return `
     <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">${description}</p>
@@ -21,7 +21,15 @@ const createDestinationTemplate = (destination) => {
           </div>
         </div>
       </section>
-  ` : '';
+  `;
+};
+
+const createDestinationListTemplate = () => {
+  let template = '';
+  DESTINATION_NAMES.forEach((name) => {
+    template += `<option value="${name}"></option>`;
+  });
+  return template;
 };
 
 const createOffersTemplate = (type, offers) => {
@@ -77,15 +85,7 @@ const createTypeImageTemplate = (currentType) => {
   return template;
 };
 
-const createDestinationListTemplate = () => {
-  let template = '';
-  DESTINATION_NAMES.forEach((name) => {
-    template += `<option value="${name}"></option>`;
-  });
-  return template;
-};
-
-const createEventEditorTemplate = (tripInfo) => {
+const createNewEventFormTemplate = (tripInfo) => {
   const {dateFrom, dateTo, offers, type, destination, basePrice} = tripInfo;
 
   const tripDateFrom = dateFrom !== null
@@ -146,10 +146,7 @@ const createEventEditorTemplate = (tripInfo) => {
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Delete</button>
-      <button class="event__rollup-btn" type="button">
-        <span class="visually-hidden">Open event</span>
-      </button>
+      <button class="event__reset-btn" type="reset">Cancel</button>
     </header>
     <section class="event__details">
       ${createOffersTemplate(type, offers)}
@@ -160,7 +157,7 @@ const createEventEditorTemplate = (tripInfo) => {
 `;
 };
 
-class EventEditorView extends BaseView {
+class NewEventFormView extends BaseView {
   #info = null;
 
   constructor(tripInfo) {
@@ -169,8 +166,8 @@ class EventEditorView extends BaseView {
   }
 
   get template() {
-    return createEventEditorTemplate(this.#info);
+    return createNewEventFormTemplate(this.#info);
   }
 }
 
-export default EventEditorView;
+export default NewEventFormView;

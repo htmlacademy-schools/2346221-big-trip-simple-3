@@ -13,18 +13,56 @@ class TripPresenter {
   init(container, tripEventsModel) {
     this.#container = container;
     this.#tripEventsModel = tripEventsModel;
+    // получаем пункты для отрисовки
     this.#tripTasks = [...this.#tripEventsModel.tripEvents];
 
     render(new EventListSortingView(), this.#container);
     render(this.#tripEventsList, this.#container);
-    // добавляем окно для изменения пункта
-    this.#tripEventsList.addEvent(new EventEditorView(this.#tripTasks[0]));
 
-    for (let i = 1; i < this.#tripTasks.length; i++) {
+    for (let i = 0; i < this.#tripTasks.length; i++) {
       // добавляем пункты путешествия
-      this.#tripEventsList.addEvent(new TripEventView(this.#tripTasks[i]));
+      this.#renderTask(this.#tripTasks[i]);
     }
   }
+
+  #renderTask = (task) => {
+    const taskComponent = new TripEventView(task);
+    const taskEditorComponent = new EventEditorView(task);
+
+    const replaceTaskToForm = () => {
+      this.#tripEventsList.element.replaceChild(taskEditorComponent.element, taskComponent.element);
+    };
+
+    const replaceFormToTask = () => {
+      this.#tripEventsList.element.replaceChild(taskComponent.element, taskEditorComponent.element);
+    };
+
+    const removeTask = () => {
+      this.#tripEventsList.element.removeChild(taskEditorComponent.element);
+    };
+
+    taskComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceTaskToForm();
+    });
+
+    taskEditorComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceFormToTask();
+    });
+
+    taskEditorComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceFormToTask();
+    });
+
+    // delete
+    taskEditorComponent.element.querySelector('.event__reset-btn').addEventListener('click', () => {
+      removeTask();
+      taskEditorComponent.removeElement();
+      taskComponent.removeElement();
+    });
+
+    render(taskComponent, this.#tripEventsList.element);
+  };
 }
 
 export default TripPresenter;
