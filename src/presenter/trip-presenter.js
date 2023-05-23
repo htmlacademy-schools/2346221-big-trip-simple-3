@@ -42,7 +42,9 @@ class TripPresenter {
     };
 
     taskComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceTaskToForm();
+      if (!this.#tripEventsList.isNewFormOrEditorOpen()) {
+        replaceTaskToForm();
+      }
     });
 
     taskEditorComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
