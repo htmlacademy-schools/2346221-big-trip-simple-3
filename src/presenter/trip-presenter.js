@@ -1,10 +1,9 @@
-import { render } from '../render';
-import TripEventsListView from '../view/trip-events-list.js';
-import EventEditorView from '../view/event-editor-view.js';
+import { render, replace, remove } from '../framework/render.js';
+import TripEventsListView from '../view/trip-events-list-view.js';
+import EventEditFormView from '../view/event-edit-form-view.js';
 import TripEventView from '../view/trip-event-view.js';
 import EventListSortingView from '../view/event-list-sorting-view.js';
 import EmptyListView from '../view/empty-list-view.js';
-import { createOnEscKeydownFunction } from '../utils.js';
 
 class TripPresenter {
   #tripEventsList = new TripEventsListView();
@@ -37,45 +36,45 @@ class TripPresenter {
 
   #renderTask = (task) => {
     const taskComponent = new TripEventView(task);
-    const taskEditorComponent = new EventEditorView(task);
-    let onEditorEscKeydownListener;
+    let taskEditFormComponent;
+
+    const removeTask = () => {
+      taskEditFormComponent.removeAllListeners();
+      remove(taskEditFormComponent);
+      taskComponent.removeEditClickListener();
+      remove(taskComponent);
+      const taskIndex = this.#tripTasks.indexOf(task);
+      this.#tripTasks.splice(taskIndex, 1);
+      if (!this.#tripTasks.length) {
+        this.#renderEmptyList();
+      }
+    };
 
     const replaceFormToTask = () => {
-      this.#tripEventsList.element.replaceChild(taskComponent.element, taskEditorComponent.element);
-      document.removeEventListener('keydown', onEditorEscKeydownListener);
+      taskEditFormComponent.removeAllListeners();
+      taskComponent.setEditClickListener(replaceTaskToForm);
+      replace(taskComponent, taskEditFormComponent);
+      remove(taskEditFormComponent);
     };
 
     const replaceTaskToForm = () => {
-      this.#tripEventsList.element.replaceChild(taskEditorComponent.element, taskComponent.element);
-    };
+      if (!this.#tripEventsList.isNewFormOrEditorOpen()){
+        taskEditFormComponent = new EventEditFormView(task);
+        // нажатие на кнопку Save
+        taskEditFormComponent.setFormSubmitListener(replaceFormToTask);
+        // нажатие на стрелку, чтобы закрыть форму
+        taskEditFormComponent.setCloseButtonClickListener(replaceFormToTask);
+        // нажатие на кнопку Delete
+        taskEditFormComponent.setDeleteButtonClickListener(removeTask);
+        // нажате на Esc для закрытия формы
+        taskEditFormComponent.setEscKeydownListener(replaceFormToTask);
 
-    const removeTask = () => {
-      this.#tripEventsList.element.removeChild(taskEditorComponent.element);
-      document.removeEventListener('keydown', onEditorEscKeydownListener);
-    };
-    // нажатие на стрелку, чтобы открыть форму
-    taskComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      if (!this.#tripEventsList.isNewFormOrEditorOpen()) {
-        replaceTaskToForm();
-        onEditorEscKeydownListener = createOnEscKeydownFunction(document, replaceFormToTask);
+        replace(taskEditFormComponent, taskComponent);
       }
-    });
-    // нажатие на кнопку Save
-    taskEditorComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceFormToTask();
-    });
-    // нажатие на стрелку, чтобы закрыть форму
-    taskEditorComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceFormToTask();
-    });
+    };
 
-    // нажатие на кнопку Delete
-    taskEditorComponent.element.querySelector('.event__reset-btn').addEventListener('click', () => {
-      removeTask();
-      taskEditorComponent.removeElement();
-      taskComponent.removeElement();
-    });
+    // нажатие на стрелку, чтобы открыть форму
+    taskComponent.setEditClickListener(replaceTaskToForm);
 
     render(taskComponent, this.#tripEventsList.element);
   };
