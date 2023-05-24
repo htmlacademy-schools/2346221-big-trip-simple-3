@@ -37,44 +37,54 @@ class TripPresenter {
 
   #renderTask = (task) => {
     const taskComponent = new TripEventView(task);
-    const taskEditorComponent = new EventEditorView(task);
+    let taskEditorComponent;
     let onEditorEscKeydownListener;
-
-    const replaceFormToTask = () => {
-      this.#tripEventsList.element.replaceChild(taskComponent.element, taskEditorComponent.element);
-      document.removeEventListener('keydown', onEditorEscKeydownListener);
-    };
-
-    const replaceTaskToForm = () => {
-      this.#tripEventsList.element.replaceChild(taskEditorComponent.element, taskComponent.element);
-    };
 
     const removeTask = () => {
       this.#tripEventsList.element.removeChild(taskEditorComponent.element);
       document.removeEventListener('keydown', onEditorEscKeydownListener);
     };
+
+    const replaceFormToTask = () => {
+      this.#tripEventsList.element.replaceChild(taskComponent.element, taskEditorComponent.element);
+      document.removeEventListener('keydown', onEditorEscKeydownListener);
+      taskEditorComponent = null;
+    };
+
+    const replaceTaskToForm = () => {
+      taskEditorComponent = new EventEditorView(task);
+      this.#tripEventsList.element.replaceChild(taskEditorComponent.element, taskComponent.element);
+
+      // нажатие на кнопку Save
+      taskEditorComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
+        evt.preventDefault();
+        replaceFormToTask();
+      });
+      // нажатие на стрелку, чтобы закрыть форму
+      taskEditorComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+        replaceFormToTask();
+      });
+
+      // нажатие на кнопку Delete
+      taskEditorComponent.element.querySelector('.event__reset-btn').addEventListener('click', () => {
+        removeTask();
+        taskEditorComponent.removeElement();
+        taskComponent.removeElement();
+        taskEditorComponent = null;
+        const taskIndex = this.#tripTasks.indexOf(task);
+        this.#tripTasks.splice(taskIndex, 1);
+        if (!this.#tripTasks.length) {
+          this.#renderEmptyList();
+        }
+      });
+    };
+
     // нажатие на стрелку, чтобы открыть форму
     taskComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
       if (!this.#tripEventsList.isNewFormOrEditorOpen()) {
         replaceTaskToForm();
         onEditorEscKeydownListener = createOnEscKeydownFunction(document, replaceFormToTask);
       }
-    });
-    // нажатие на кнопку Save
-    taskEditorComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceFormToTask();
-    });
-    // нажатие на стрелку, чтобы закрыть форму
-    taskEditorComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceFormToTask();
-    });
-
-    // нажатие на кнопку Delete
-    taskEditorComponent.element.querySelector('.event__reset-btn').addEventListener('click', () => {
-      removeTask();
-      taskEditorComponent.removeElement();
-      taskComponent.removeElement();
     });
 
     render(taskComponent, this.#tripEventsList.element);
