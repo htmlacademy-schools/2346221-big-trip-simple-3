@@ -70,14 +70,26 @@ const createTripEventTemplate = (tripInfo) => {
 class TripEventView extends AbstractView {
   #info = null;
 
-  constructor(tripInfo) {
+  constructor(info) {
     super();
-    this.#info = tripInfo;
+    this.#info = info;
   }
 
   get template() {
     return createTripEventTemplate(this.#info);
   }
+
+  setEditClickListener = (callback) => {
+    this._callback.openEditor = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+  };
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.openEditor();
+    this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#editClickHandler);
+    this._callback = {};
+  };
 }
 
 export default TripEventView;
