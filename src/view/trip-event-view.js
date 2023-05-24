@@ -1,6 +1,6 @@
 import { getDate, getTime } from '../utils.js';
 import { OFFERS_BY_TYPE } from '../mock/trip-event.js';
-import BaseView from './base-view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createOffersTemplate = (type, offers) => {
   let template = '';
@@ -67,7 +67,7 @@ const createTripEventTemplate = (tripInfo) => {
   `;
 };
 
-class TripEventView extends BaseView {
+class TripEventView extends AbstractView {
   #info = null;
 
   constructor(tripInfo) {

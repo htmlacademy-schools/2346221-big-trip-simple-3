@@ -1,6 +1,6 @@
 import { getFullDataTime } from '../utils.js';
 import { OFFERS_BY_TYPE, DESTINATION_NAMES } from '../mock/trip-event.js';
-import BaseView from './base-view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createDestinationTemplate = (destination) => {
   const {description, pictures} = destination;
@@ -160,12 +160,12 @@ const createEventEditorTemplate = (tripInfo) => {
 `;
 };
 
-class EventEditorView extends BaseView {
+class EventEditorView extends AbstractView {
   #info = null;
 
-  constructor(tripInfo) {
+  constructor(info) {
     super();
-    this.#info = tripInfo;
+    this.#info = info;
   }
 
   get template() {

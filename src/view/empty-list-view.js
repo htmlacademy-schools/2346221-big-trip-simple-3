@@ -1,4 +1,4 @@
-import BaseView from './base-view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createEmptyListTemplate = (filter) => {
   if (filter === 'Everything') {
@@ -17,7 +17,7 @@ const createEmptyListTemplate = (filter) => {
   throw new Error('Unexpected filter');
 };
 
-class EmptyListView extends BaseView {
+class EmptyListView extends AbstractView {
   #filter;
 
   constructor(filter) {
