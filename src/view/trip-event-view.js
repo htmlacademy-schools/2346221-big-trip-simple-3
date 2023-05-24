@@ -87,8 +87,10 @@ class TripEventView extends AbstractView {
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.openEditor();
+  };
+
+  removeEditClickListener = () => {
     this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#editClickHandler);
-    this._callback = {};
   };
 }
 

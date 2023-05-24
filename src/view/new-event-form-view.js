@@ -189,12 +189,12 @@ class NewEventFormView extends AbstractView {
     this._callback.closeForm();
   };
 
-  setSaveClickListener = (callback) => {
+  setFormSubmitListener = (callback) => {
     this._callback.saveForm = callback;
-    this.element.querySelector('.event__save-btn').addEventListener('submit', this.#saveClickHandler);
+    this.element.querySelector('form').addEventListener('submit', this.#formSaveHandler);
   };
 
-  #saveClickHandler = (evt) => {
+  #formSaveHandler = (evt) => {
     evt.preventDefault();
     this._callback.saveForm();
   };
@@ -207,6 +207,24 @@ class NewEventFormView extends AbstractView {
   #escKeydownHandler = (evt) => {
     evt.preventDefault();
     this._callback.escClose();
+  };
+
+  removeEscKeydownListener = () => {
+    document.removeEventListener('keydown', this.#escKeydownHandler);
+  };
+
+  removeFormSubmitListener = () => {
+    this.element.querySelector('form').removeEventListener('submit', this.#formSaveHandler);
+  };
+
+  removeCloseClickListener = () => {
+    this.element.querySelector('.event__reset-btn').removeEventListener('click', this.#closeClickHandler);
+  };
+
+  removeAllListeners = () => {
+    this.removeEscKeydownListener();
+    this.removeFormSubmitListener();
+    this.removeCloseClickListener();
   };
 }
 

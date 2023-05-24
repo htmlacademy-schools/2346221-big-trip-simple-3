@@ -160,7 +160,7 @@ const createEventEditorTemplate = (tripInfo) => {
 `;
 };
 
-class EventEditorView extends AbstractView {
+class EventEditFormView extends AbstractView {
   #info = null;
 
   constructor(info) {
@@ -172,32 +172,32 @@ class EventEditorView extends AbstractView {
     return createEventEditorTemplate(this.#info);
   }
 
-  setCloseClickListener = (callback) => {
-    this._callback.close = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
+  setCloseButtonClickListener = (callback) => {
+    this._callback.closeForm = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeButtonClickHandler);
   };
 
-  #closeClickHandler = (evt) => {
+  #closeButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.close();
+    this._callback.closeForm();
   };
 
-  setSaveClickListener = (callback) => {
-    this._callback.save = callback;
-    this.element.querySelector('.event__save-btn').addEventListener('submit', this.#saveClickHandler);
+  setFormSubmitListener = (callback) => {
+    this._callback.saveForm = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSaveHandler);
   };
 
-  #saveClickHandler = (evt) => {
+  #formSaveHandler = (evt) => {
     evt.preventDefault();
-    this._callback.save();
+    this._callback.saveForm();
   };
 
-  setDeleteClickListener = (callback) => {
+  setDeleteButtonClickListener = (callback) => {
     this._callback.delete = callback;
-    this.element.querySelector('.event__save-btn').addEventListener('click', this.#deleteClickHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteButtonClickHandler);
   };
 
-  #deleteClickHandler = (evt) => {
+  #deleteButtonClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.delete();
   };
@@ -211,6 +211,30 @@ class EventEditorView extends AbstractView {
     evt.preventDefault();
     this._callback.escClose();
   };
+
+  removeEscKeydownListener = () => {
+    document.removeEventListener('keydown', this.#escKeydownHandler);
+  };
+
+  removeDeleteButtonClickListener = () => {
+    this.element.querySelector('.event__reset-btn').removeEventListener('click', this.#deleteButtonClickHandler);
+  };
+
+  removeFormSubmitListener = () => {
+    this.element.querySelector('form').removeEventListener('submit', this.#formSaveHandler);
+  };
+
+  removeCloseButtonClickListener = () => {
+    this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#closeButtonClickHandler);
+  };
+
+  removeAllListeners = () => {
+    this.removeEscKeydownListener();
+    this.removeDeleteButtonClickListener();
+    this.removeFormSubmitListener();
+    this.removeCloseButtonClickListener();
+    this._callback = {};
+  };
 }
 
-export default EventEditorView;
+export default EventEditFormView;
