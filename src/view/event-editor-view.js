@@ -171,6 +171,46 @@ class EventEditorView extends AbstractView {
   get template() {
     return createEventEditorTemplate(this.#info);
   }
+
+  setCloseClickListener = (callback) => {
+    this._callback.close = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
+  };
+
+  #closeClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.close();
+  };
+
+  setSaveClickListener = (callback) => {
+    this._callback.save = callback;
+    this.element.querySelector('.event__save-btn').addEventListener('submit', this.#saveClickHandler);
+  };
+
+  #saveClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.save();
+  };
+
+  setDeleteClickListener = (callback) => {
+    this._callback.delete = callback;
+    this.element.querySelector('.event__save-btn').addEventListener('click', this.#deleteClickHandler);
+  };
+
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.delete();
+  };
+
+  setEscKeydownListener = (callback) => {
+    this._callback.escClose = callback;
+    document.addEventListener('keydown', this.#escKeydownHandler);
+  };
+
+  #escKeydownHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.escClose();
+  };
 }
 
 export default EventEditorView;

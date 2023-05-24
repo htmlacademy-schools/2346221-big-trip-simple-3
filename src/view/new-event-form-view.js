@@ -2,6 +2,16 @@ import { getFullDataTime } from '../utils.js';
 import { OFFERS_BY_TYPE, DESTINATION_NAMES } from '../mock/trip-event.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
+const INFO_TEMPLATE = {
+  id: 1,
+  type: 'flight',
+  dateFrom: '2023-01-10T22:55:56.845Z',
+  dateTo: '2023-01-10T22:55:56.845Z',
+  basePrice: 0,
+  offers: null,
+  destination: null,
+};
+
 const createDestinationTemplate = (destination) => {
   const {description, pictures} = destination;
 
@@ -160,7 +170,7 @@ const createNewEventFormTemplate = (tripInfo) => {
 class NewEventFormView extends AbstractView {
   #info = null;
 
-  constructor(info) {
+  constructor(info = INFO_TEMPLATE) {
     super();
     this.#info = info;
   }
@@ -168,6 +178,36 @@ class NewEventFormView extends AbstractView {
   get template() {
     return createNewEventFormTemplate(this.#info);
   }
+
+  setCloseClickListener = (callback) => {
+    this._callback.closeForm = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#closeClickHandler);
+  };
+
+  #closeClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeForm();
+  };
+
+  setSaveClickListener = (callback) => {
+    this._callback.saveForm = callback;
+    this.element.querySelector('.event__save-btn').addEventListener('submit', this.#saveClickHandler);
+  };
+
+  #saveClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.saveForm();
+  };
+
+  setEscKeydownListener = (callback) => {
+    this._callback.escClose = callback;
+    document.addEventListener('keydown', this.#escKeydownHandler);
+  };
+
+  #escKeydownHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.escClose();
+  };
 }
 
 export default NewEventFormView;
