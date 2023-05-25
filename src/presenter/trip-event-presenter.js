@@ -68,6 +68,7 @@ export default class TripEventPresenter {
   };
 
   #removeElement = () => {
+    this.#eventEditorComponent.removeEscKeydownListener();
     this.destroy();
     if (this.#container.element.childElementCount === 0) {
       const epmtyList = new EmptyListView('Everything');
