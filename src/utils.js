@@ -46,4 +46,4 @@ const updateItem = (items, update) => {
   ];
 };
 
-export { updateItem, getRandomInt, getRandomArrayElement, getDate, getTime, getFullDataTime, createOnEscKeydownFunction };
+export { isEscapeKey, updateItem, getRandomInt, getRandomArrayElement, getDate, getTime, getFullDataTime, createOnEscKeydownFunction };

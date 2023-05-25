@@ -37,7 +37,7 @@ export default class TripEventPresenter {
     this.#eventComponent.setEditClickListener(this.#replaceEventToForm);
 
     // нажатие на кнопку Save
-    this.#eventEditorComponent.setFormSubmitListener(this.#replaceFormToEvent); //handleFormSubmit
+    this.#eventEditorComponent.setFormSubmitListener(this.#handleFormSubmit); //handleFormSubmit
     // нажатие на стрелку, чтобы закрыть форму
     this.#eventEditorComponent.setCloseButtonClickListener(this.#replaceFormToEvent);
     // нажатие на кнопку Delete
@@ -75,11 +75,9 @@ export default class TripEventPresenter {
     replace(this.#eventEditorComponent, this.#eventComponent);
   };
 
-  #handleFormSubmit = (task) => { //no task
-    //evt.preventDefault();
-    // вот тут объявить task и педедать ему с нужной информацией
-    this.#changeData(task);
+  #handleFormSubmit = (tripEvent) => {
     this.#replaceFormToEvent();
+    this.#changeData(tripEvent);
   };
 
   destroy = () => {

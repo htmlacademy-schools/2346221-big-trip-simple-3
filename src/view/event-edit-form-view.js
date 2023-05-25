@@ -1,6 +1,7 @@
 import { getFullDataTime } from '../utils.js';
 import { OFFERS_BY_TYPE, DESTINATION_NAMES } from '../mock/trip-event.js';
 import AbstractView from '../framework/view/abstract-view.js';
+import { DESTINATIONS } from '../mock/trip-event.js';
 
 const createDestinationTemplate = (destination) => {
   const {description, pictures} = destination;
@@ -140,9 +141,9 @@ const createEventEditorTemplate = (tripInfo) => {
       <div class="event__field-group  event__field-group--price">
         <label class="event__label" for="event-price-1">
           <span class="visually-hidden">Price</span>
-          &euro; ${basePrice}
+          &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -189,7 +190,7 @@ class EventEditFormView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.saveForm(this.#info);
+    this._callback.saveForm(this.getNewInformation());
   };
 
   setDeleteButtonClickListener = (callback) => {
@@ -208,12 +209,38 @@ class EventEditFormView extends AbstractView {
   };
 
   #escKeydownHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.escClose();
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this._callback.escClose();
+    }
   };
 
   removeEscKeydownListener = () => {
     document.removeEventListener('keydown', this.#escKeydownHandler);
+  };
+
+  getNewInformation = () => {
+    const selectedDestinaton = this.element.querySelector('.event__input--destination').value;
+    Object.values(DESTINATIONS).forEach((destination) => {
+      if (destination.name === selectedDestinaton) {
+        this.#info.destination = destination;
+      }
+    });
+    const selectedType = this.element.querySelector('.event__type-input:checked').value;
+    if (this.#info.type !== selectedType) {
+      this.#info.offers = [];
+    }
+    this.#info.type = selectedType;
+
+    // this.#info.dateFrom = newDateFrom;
+    // this.#info.dateTo = newDateTo;
+
+    const newBasePrice = this.element.querySelector('.event__input--price').value;
+    this.#info.dateTo = newBasePrice;
+
+    console.log(this.#info);
+
+    return this.#info;
   };
 }
 
