@@ -15,18 +15,37 @@ export default class TripEventPresenter {
 
   init(event) {
     this.#event = event;
+
+    const prevEventComponent = this.#eventComponent;
+    const prevEventEditorComponent = this.#eventEditorComponent;
+
     this.#eventComponent = new TripEventView(event);
     this.#eventEditorComponent = new EventEditFormView(event);
 
     this.#eventComponent.setEditClickListener(this.#replaceEventToForm);
-    render(this.#eventComponent, this.#container.element);
 
     // нажатие на кнопку Save
     this.#eventEditorComponent.setFormSubmitListener(this.#replaceFormToEvent);
     // нажатие на стрелку, чтобы закрыть форму
     this.#eventEditorComponent.setCloseButtonClickListener(this.#replaceFormToEvent);
     // нажатие на кнопку Delete
-    this.#eventEditorComponent.setDeleteButtonClickListener(this.#removeEvent);
+    this.#eventEditorComponent.setDeleteButtonClickListener(this.destroy);
+
+    if (prevEventComponent === null || prevEventEditorComponent === null) {
+      render(this.#eventComponent, this.#container.element);
+      return 0;
+    }
+
+    if (this.#container.contains(prevEventComponent.element)) {
+      replace(this.#eventComponent, prevEventComponent);
+    }
+
+    if (this.#container.contains(prevEventEditorComponent.element)) {
+      replace(this.#eventEditorComponent, prevEventEditorComponent);
+    }
+
+    remove(prevEventComponent);
+    remove(prevEventEditorComponent);
   }
 
   #replaceFormToEvent = () => {
@@ -43,7 +62,7 @@ export default class TripEventPresenter {
     }
   };
 
-  #removeEvent = () => {
+  destroy = () => {
     this.#eventEditorComponent.removeAllListeners();
     remove(this.#eventEditorComponent);
     this.#eventComponent.removeEditClickListener();
