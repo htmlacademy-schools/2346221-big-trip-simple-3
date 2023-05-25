@@ -7,44 +7,43 @@ export default class TripEventPresenter {
   #eventComponent = null;
   #eventEditorComponent = null;
   #container = null;
-  #task = null;
+  #event = null;
 
   constructor(container) {
     this.#container = container;
   }
 
-  init(task) {
-    this.#task = task;
-    this.#eventComponent = new TripEventView(task);
+  init(event) {
+    this.#event = event;
+    this.#eventComponent = new TripEventView(event);
+    this.#eventEditorComponent = new EventEditFormView(event);
 
-    this.#eventComponent.setEditClickListener(this.#replaceTaskToForm);
+    this.#eventComponent.setEditClickListener(this.#replaceEventToForm);
     render(this.#eventComponent, this.#container.element);
+
+    // нажатие на кнопку Save
+    this.#eventEditorComponent.setFormSubmitListener(this.#replaceFormToEvent);
+    // нажатие на стрелку, чтобы закрыть форму
+    this.#eventEditorComponent.setCloseButtonClickListener(this.#replaceFormToEvent);
+    // нажатие на кнопку Delete
+    this.#eventEditorComponent.setDeleteButtonClickListener(this.#removeEvent);
   }
 
-  #replaceFormToTask = () => {
-    this.#eventEditorComponent.removeAllListeners();
-    this.#eventComponent.setEditClickListener(this.#replaceTaskToForm);
+  #replaceFormToEvent = () => {
+    this.#eventEditorComponent.removeEscKeydownListener();
     replace(this.#eventComponent, this.#eventEditorComponent);
-    remove(this.#eventEditorComponent);
   };
 
-  #replaceTaskToForm = () => {
+  #replaceEventToForm = () => {
     if (!this.#container.isNewFormOrEditorOpen()){
-      this.#eventEditorComponent = new EventEditFormView(this.#task);
-      // нажатие на кнопку Save
-      this.#eventEditorComponent.setFormSubmitListener(this.#replaceFormToTask);
-      // нажатие на стрелку, чтобы закрыть форму
-      this.#eventEditorComponent.setCloseButtonClickListener(this.#replaceFormToTask);
-      // нажатие на кнопку Delete
-      this.#eventEditorComponent.setDeleteButtonClickListener(this.#removeTask);
       // нажате на Esc для закрытия формы
-      this.#eventEditorComponent.setEscKeydownListener(this.#replaceFormToTask);
+      this.#eventEditorComponent.setEscKeydownListener(this.#replaceFormToEvent);
 
       replace(this.#eventEditorComponent, this.#eventComponent);
     }
   };
 
-  #removeTask = () => {
+  #removeEvent = () => {
     this.#eventEditorComponent.removeAllListeners();
     remove(this.#eventEditorComponent);
     this.#eventComponent.removeEditClickListener();

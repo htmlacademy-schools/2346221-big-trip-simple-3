@@ -9,19 +9,19 @@ class TripPresenter {
   #eventSorter = new EventListSortingView();
   #container;
   #tripEventsModel;
-  #tripTasks;
+  #tripEvents;
 
   init(container, tripEventsModel) {
     this.#container = container;
     this.#tripEventsModel = tripEventsModel;
     // получаем пункты для отрисовки
-    this.#tripTasks = this.#tripEventsModel.tripEvents;
+    this.#tripEvents = this.#tripEventsModel.tripEvents;
 
     render(this.#eventSorter, this.#container);
     render(this.#tripEventsList, this.#container);
-    if (this.#tripTasks.length){
-      for (let i = 0; i < this.#tripTasks.length; i++) {
-        this.#renderTask(this.#tripTasks[i]);
+    if (this.#tripEvents.length){
+      for (let i = 0; i < this.#tripEvents.length; i++) {
+        this.#renderEvent(this.#tripEvents[i]);
       }
     } else {
       this.#renderEmptyList();
@@ -33,7 +33,7 @@ class TripPresenter {
     render(emptyListComponent, this.#container);
   };
 
-  #renderTask = (task) => {
+  #renderEvent = (task) => {
     const tripEventPresenter = new TripEventPresenter(this.#tripEventsList);
     tripEventPresenter.init(task);
   };
