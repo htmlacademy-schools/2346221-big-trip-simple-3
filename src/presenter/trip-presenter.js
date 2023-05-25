@@ -36,7 +36,7 @@ class TripPresenter {
   };
 
   #renderEvent = (task) => {
-    const tripEventPresenter = new TripEventPresenter(this.#tripEventsList, this.#handleEventChange);
+    const tripEventPresenter = new TripEventPresenter(this.#tripEventsList, this.#handleEventChange, this.#handleModeChange);
     tripEventPresenter.init(task);
     this.#tripEventPresenter.set(task.id, tripEventPresenter);
   };
@@ -49,6 +49,10 @@ class TripPresenter {
   #handleEventChange = (updatedEvent) => {
     this.#tripEvents = updateItem(this.#tripEvents, updatedEvent);
     this.#tripEventPresenter.get(updatedEvent.id).init(updatedEvent);
+  };
+
+  #handleModeChange = () => {
+    this.#tripEventPresenter.forEach((presenter) => presenter.resetView());
   };
 }
 

@@ -3,17 +3,26 @@ import EventEditFormView from '../view/event-edit-form-view.js';
 import TripEventView from '../view/trip-event-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class TripEventPresenter {
   #eventComponent = null;
   #eventEditorComponent = null;
 
   #container = null;
   #changeData = null;
-  #event = null;
+  #changeMode = null;
 
-  constructor(container, changeData) {
+  #event = null;
+  #mode = Mode.DEFAULT;
+
+  constructor(container, changeData, changeMode) {
     this.#container = container;
     this.#changeData = changeData;
+    this.#changeMode = changeMode;
   }
 
   init(event) {
@@ -39,11 +48,11 @@ export default class TripEventPresenter {
       return 0;
     }
 
-    if (this.#container.contains(prevEventComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#eventComponent, prevEventComponent);
     }
 
-    if (this.#container.contains(prevEventEditorComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#eventEditorComponent, prevEventEditorComponent);
     }
 
@@ -53,16 +62,17 @@ export default class TripEventPresenter {
 
   #replaceFormToEvent = () => {
     this.#eventEditorComponent.removeEscKeydownListener();
+    this.#mode = Mode.DEFAULT;
     replace(this.#eventComponent, this.#eventEditorComponent);
   };
 
   #replaceEventToForm = () => {
-    if (!this.#container.isNewFormOrEditorOpen()){
-      // нажате на Esc для закрытия формы
-      this.#eventEditorComponent.setEscKeydownListener(this.#replaceFormToEvent);
+    // нажате на Esc для закрытия формы
+    this.#eventEditorComponent.setEscKeydownListener(this.#replaceFormToEvent);
+    this.#changeMode();
+    this.#mode = Mode.EDITING;
 
-      replace(this.#eventEditorComponent, this.#eventComponent);
-    }
+    replace(this.#eventEditorComponent, this.#eventComponent);
   };
 
   #handleFormSubmit = (task) => { //no task
@@ -75,6 +85,12 @@ export default class TripEventPresenter {
   destroy = () => {
     remove(this.#eventEditorComponent);
     remove(this.#eventComponent);
+  };
+
+  resetView = () => {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToEvent();
+    }
   };
 
   #removeElement = () => {
