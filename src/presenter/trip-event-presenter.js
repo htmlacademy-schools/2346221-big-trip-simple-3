@@ -29,7 +29,7 @@ export default class TripEventPresenter {
     // нажатие на стрелку, чтобы закрыть форму
     this.#eventEditorComponent.setCloseButtonClickListener(this.#replaceFormToEvent);
     // нажатие на кнопку Delete
-    this.#eventEditorComponent.setDeleteButtonClickListener(this.destroy);
+    this.#eventEditorComponent.setDeleteButtonClickListener(this.#removeElement);
 
     if (prevEventComponent === null || prevEventEditorComponent === null) {
       render(this.#eventComponent, this.#container.element);
@@ -63,10 +63,12 @@ export default class TripEventPresenter {
   };
 
   destroy = () => {
-    this.#eventEditorComponent.removeAllListeners();
     remove(this.#eventEditorComponent);
-    this.#eventComponent.removeEditClickListener();
     remove(this.#eventComponent);
+  };
+
+  #removeElement = () => {
+    this.destroy();
     if (this.#container.element.childElementCount === 0) {
       const epmtyList = new EmptyListView('Everything');
       render(epmtyList, this.#container.element);
