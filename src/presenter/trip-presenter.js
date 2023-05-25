@@ -1,9 +1,8 @@
-import { render, replace, remove } from '../framework/render.js';
+import { render } from '../framework/render.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
-import EventEditFormView from '../view/event-edit-form-view.js';
-import TripEventView from '../view/trip-event-view.js';
 import EventListSortingView from '../view/event-list-sorting-view.js';
 import EmptyListView from '../view/empty-list-view.js';
+import TripEventPresenter from './trip-event-presenter.js';
 
 class TripPresenter {
   #tripEventsList = new TripEventsListView();
@@ -16,7 +15,7 @@ class TripPresenter {
     this.#container = container;
     this.#tripEventsModel = tripEventsModel;
     // получаем пункты для отрисовки
-    this.#tripTasks = [...this.#tripEventsModel.tripEvents];
+    this.#tripTasks = this.#tripEventsModel.tripEvents;
 
     render(this.#eventSorter, this.#container);
     render(this.#tripEventsList, this.#container);
@@ -35,48 +34,8 @@ class TripPresenter {
   };
 
   #renderTask = (task) => {
-    const taskComponent = new TripEventView(task);
-    let taskEditFormComponent;
-
-    const removeTask = () => {
-      taskEditFormComponent.removeAllListeners();
-      remove(taskEditFormComponent);
-      taskComponent.removeEditClickListener();
-      remove(taskComponent);
-      const taskIndex = this.#tripTasks.indexOf(task);
-      this.#tripTasks.splice(taskIndex, 1);
-      if (!this.#tripTasks.length) {
-        this.#renderEmptyList();
-      }
-    };
-
-    const replaceFormToTask = () => {
-      taskEditFormComponent.removeAllListeners();
-      taskComponent.setEditClickListener(replaceTaskToForm);
-      replace(taskComponent, taskEditFormComponent);
-      remove(taskEditFormComponent);
-    };
-
-    const replaceTaskToForm = () => {
-      if (!this.#tripEventsList.isNewFormOrEditorOpen()){
-        taskEditFormComponent = new EventEditFormView(task);
-        // нажатие на кнопку Save
-        taskEditFormComponent.setFormSubmitListener(replaceFormToTask);
-        // нажатие на стрелку, чтобы закрыть форму
-        taskEditFormComponent.setCloseButtonClickListener(replaceFormToTask);
-        // нажатие на кнопку Delete
-        taskEditFormComponent.setDeleteButtonClickListener(removeTask);
-        // нажате на Esc для закрытия формы
-        taskEditFormComponent.setEscKeydownListener(replaceFormToTask);
-
-        replace(taskEditFormComponent, taskComponent);
-      }
-    };
-
-    // нажатие на стрелку, чтобы открыть форму
-    taskComponent.setEditClickListener(replaceTaskToForm);
-
-    render(taskComponent, this.#tripEventsList.element);
+    const tripEventPresenter = new TripEventPresenter(this.#tripEventsList);
+    tripEventPresenter.init(task);
   };
 }
 
