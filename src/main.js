@@ -16,5 +16,3 @@ const printSelectedFilter = () => console.log(eventFilters.selectedFilter);
 eventFilters.setFilterChangeListener(printSelectedFilter);
 render(eventFilters, tripFiltersSection);
 
-// надо добавить добавление формы при нажатие на кнопку
-
