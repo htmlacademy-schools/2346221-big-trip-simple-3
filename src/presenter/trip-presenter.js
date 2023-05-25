@@ -7,6 +7,7 @@ import TripEventPresenter from './trip-event-presenter.js';
 class TripPresenter {
   #tripEventsList = new TripEventsListView();
   #eventSorter = new EventListSortingView();
+  #tripEventPresenter = new Map();
   #container;
   #tripEventsModel;
   #tripEvents;
@@ -36,6 +37,12 @@ class TripPresenter {
   #renderEvent = (task) => {
     const tripEventPresenter = new TripEventPresenter(this.#tripEventsList);
     tripEventPresenter.init(task);
+    this.#tripEventPresenter.set(task.id, tripEventPresenter);
+  };
+
+  #clearEventList = () => {
+    this.#tripEventPresenter.forEach((presenter) => presenter.destroy());
+    this.#tripEventPresenter.clear();
   };
 }
 
