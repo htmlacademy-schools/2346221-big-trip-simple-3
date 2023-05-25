@@ -8,6 +8,13 @@ const tripEventsSection = document.querySelector('.trip-events');
 
 const tripEventsModel = new TripEventsModel();
 const tripPresenter = new TripPresenter();
-
-render(new EventFiltersView(), tripFiltersSection);
 tripPresenter.init(tripEventsSection, tripEventsModel);
+
+const eventFilters = new EventFiltersView();
+
+const printSelectedFilter = () => console.log(eventFilters.selectedFilter);
+eventFilters.setFilterChangeListener(printSelectedFilter);
+render(eventFilters, tripFiltersSection);
+
+// надо добавить добавление формы при нажатие на кнопку
+
