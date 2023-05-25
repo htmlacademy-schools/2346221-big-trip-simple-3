@@ -3,6 +3,7 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import EventListSortingView from '../view/event-list-sorting-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
+import { updateItem } from '../utils.js';
 
 class TripPresenter {
   #tripEventsList = new TripEventsListView();
@@ -35,7 +36,7 @@ class TripPresenter {
   };
 
   #renderEvent = (task) => {
-    const tripEventPresenter = new TripEventPresenter(this.#tripEventsList);
+    const tripEventPresenter = new TripEventPresenter(this.#tripEventsList, this.#handleEventChange);
     tripEventPresenter.init(task);
     this.#tripEventPresenter.set(task.id, tripEventPresenter);
   };
@@ -43,6 +44,11 @@ class TripPresenter {
   #clearEventList = () => {
     this.#tripEventPresenter.forEach((presenter) => presenter.destroy());
     this.#tripEventPresenter.clear();
+  };
+
+  #handleEventChange = (updatedEvent) => {
+    this.#tripEvents = updateItem(this.#tripEvents, updatedEvent);
+    this.#tripEventPresenter.get(updatedEvent.id).init(updatedEvent);
   };
 }
 

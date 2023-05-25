@@ -6,11 +6,14 @@ import EmptyListView from '../view/empty-list-view.js';
 export default class TripEventPresenter {
   #eventComponent = null;
   #eventEditorComponent = null;
+
   #container = null;
+  #changeData = null;
   #event = null;
 
-  constructor(container) {
+  constructor(container, changeData) {
     this.#container = container;
+    this.#changeData = changeData;
   }
 
   init(event) {
@@ -25,7 +28,7 @@ export default class TripEventPresenter {
     this.#eventComponent.setEditClickListener(this.#replaceEventToForm);
 
     // нажатие на кнопку Save
-    this.#eventEditorComponent.setFormSubmitListener(this.#replaceFormToEvent);
+    this.#eventEditorComponent.setFormSubmitListener(this.#replaceFormToEvent); //handleFormSubmit
     // нажатие на стрелку, чтобы закрыть форму
     this.#eventEditorComponent.setCloseButtonClickListener(this.#replaceFormToEvent);
     // нажатие на кнопку Delete
@@ -60,6 +63,13 @@ export default class TripEventPresenter {
 
       replace(this.#eventEditorComponent, this.#eventComponent);
     }
+  };
+
+  #handleFormSubmit = (task) => { //no task
+    //evt.preventDefault();
+    // вот тут объявить task и педедать ему с нужной информацией
+    this.#changeData(task);
+    this.#replaceFormToEvent();
   };
 
   destroy = () => {
