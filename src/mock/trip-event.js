@@ -57,10 +57,10 @@ const DESTINATION_NAMES = [
   'Orel',
 ];
 
-const destinations = {};
+const DESTINATIONS = {};
 DESTINATION_NAMES.forEach((name, index) => {
   const id = index + 1;
-  destinations[`${id}`] = {
+  DESTINATIONS[`${id}`] = {
     id,
     description: generateDescription(),
     name,
@@ -100,7 +100,7 @@ const generateOffersIds = (type) => {
   return offersIds;
 };
 
-const getRandomDestination = () => destinations[`${getRandomInt(1, DESTINATION_NAMES.length)}`];
+const getRandomDestination = () => DESTINATIONS[`${getRandomInt(1, DESTINATION_NAMES.length)}`];
 
 const generateTripEvents = (eventsNumber) => {
   const events = new Array(eventsNumber);
@@ -121,4 +121,4 @@ const generateTripEvents = (eventsNumber) => {
   return events;
 };
 
-export { generateTripEvents, OFFERS_BY_TYPE, DESTINATION_NAMES };
+export { generateTripEvents, OFFERS_BY_TYPE, DESTINATION_NAMES, DESTINATIONS };
