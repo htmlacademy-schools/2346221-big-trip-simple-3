@@ -1,7 +1,6 @@
 import { getFullDataTime } from '../utils.js';
 import { OFFERS_BY_TYPE, DESTINATION_NAMES } from '../mock/trip-event.js';
-import AbstractView from '../framework/view/abstract-view.js';
-import { DESTINATIONS } from '../mock/trip-event.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 const createDestinationTemplate = (destination) => {
   const {description, pictures} = destination;
@@ -86,8 +85,8 @@ const createDestinationListTemplate = () => {
   return template;
 };
 
-const createEventEditorTemplate = (tripInfo) => {
-  const {dateFrom, dateTo, offers, type, destination, basePrice} = tripInfo;
+const createEventEditorTemplate = (data) => {
+  const {dateFrom, dateTo, offers, type, destination, basePrice, isDestination} = data;
 
   const tripDateFrom = dateFrom !== null
     ? getFullDataTime(dateFrom)
@@ -97,9 +96,15 @@ const createEventEditorTemplate = (tripInfo) => {
     ? getFullDataTime(dateTo)
     : 'No data';
 
-  const destinationName = destination !== null
+  const destinationName = isDestination
     ? destination.name
-    : 'No destination';
+    : '';
+
+  const destinationTemplate = isDestination
+    ? createDestinationTemplate(destination)
+    : '';
+
+  const offersTemplate = createOffersTemplate(type, offers);
 
   return `
 <li class="trip-events__item">
@@ -153,24 +158,40 @@ const createEventEditorTemplate = (tripInfo) => {
       </button>
     </header>
     <section class="event__details">
-      ${createOffersTemplate(type, offers)}
-      ${createDestinationTemplate(destination)}
+      ${offersTemplate}
+      ${destinationTemplate}
     </section>
   </form>
 </li>
 `;
 };
 
-class EventEditFormView extends AbstractView {
-  #info = null;
+class EventEditFormView extends AbstractStatefulView {
+  _state = null;
 
-  constructor(info) {
+  constructor(event) {
     super();
-    this.#info = info;
+    this._state = EventEditFormView.parseEventToState(event);
   }
 
+  static parseEventToState = (event) => ({...event,
+    isDestination: event.destination !== null
+  });
+
+  static parseStateToEvent = (state) => {
+    const event = {...state};
+
+    if (!event.isDestination) {
+      event.destination = null;
+    }
+
+    delete event.isDestination;
+
+    return event;
+  };
+
   get template() {
-    return createEventEditorTemplate(this.#info);
+    return createEventEditorTemplate(this._state);
   }
 
   setCloseButtonClickListener = (callback) => {
@@ -184,13 +205,13 @@ class EventEditFormView extends AbstractView {
   };
 
   setFormSubmitListener = (callback) => {
-    this._callback.saveForm = callback;
+    this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.saveForm();
+    this._callback.formSubmit(EventEditFormView.parseStateToEvent(this._state));
   };
 
   setDeleteButtonClickListener = (callback) => {
