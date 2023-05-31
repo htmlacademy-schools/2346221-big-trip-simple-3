@@ -37,7 +37,7 @@ export default class TripEventPresenter {
     this.#eventComponent.setEditClickListener(this.#replaceEventToForm);
 
     // нажатие на кнопку Save
-    this.#eventEditorComponent.setFormSubmitListener(this.#handleFormSubmit); //handleFormSubmit
+    this.#eventEditorComponent.setFormSubmitListener(this.#replaceFormToEvent);
     // нажатие на стрелку, чтобы закрыть форму
     this.#eventEditorComponent.setCloseButtonClickListener(this.#replaceFormToEvent);
     // нажатие на кнопку Delete

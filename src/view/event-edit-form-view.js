@@ -190,7 +190,7 @@ class EventEditFormView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.saveForm(this.getNewInformation());
+    this._callback.saveForm();
   };
 
   setDeleteButtonClickListener = (callback) => {
@@ -217,30 +217,6 @@ class EventEditFormView extends AbstractView {
 
   removeEscKeydownListener = () => {
     document.removeEventListener('keydown', this.#escKeydownHandler);
-  };
-
-  getNewInformation = () => {
-    const selectedDestinaton = this.element.querySelector('.event__input--destination').value;
-    Object.values(DESTINATIONS).forEach((destination) => {
-      if (destination.name === selectedDestinaton) {
-        this.#info.destination = destination;
-      }
-    });
-    const selectedType = this.element.querySelector('.event__type-input:checked').value;
-    if (this.#info.type !== selectedType) {
-      this.#info.offers = [];
-    }
-    this.#info.type = selectedType;
-
-    // this.#info.dateFrom = newDateFrom;
-    // this.#info.dateTo = newDateTo;
-
-    const newBasePrice = this.element.querySelector('.event__input--price').value;
-    this.#info.dateTo = newBasePrice;
-
-    console.log(this.#info);
-
-    return this.#info;
   };
 }
 
