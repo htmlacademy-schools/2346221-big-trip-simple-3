@@ -1,6 +1,7 @@
 import { getFullDataTime } from '../utils.js';
-import { OFFERS_BY_TYPE, DESTINATION_NAMES } from '../mock/trip-event.js';
+import { OFFERS_BY_TYPE, DESTINATION_NAMES, DESTINATIONS } from '../mock/trip-event.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import dayjs from 'dayjs';
 
 const createDestinationTemplate = (destination) => {
   const {description, pictures} = destination;
@@ -172,6 +173,7 @@ class EventEditFormView extends AbstractStatefulView {
   constructor(event) {
     super();
     this._state = EventEditFormView.parseEventToState(event);
+    this.#setInnerHandlers();
   }
 
   static parseEventToState = (event) => ({...event,
@@ -193,6 +195,99 @@ class EventEditFormView extends AbstractStatefulView {
   get template() {
     return createEventEditorTemplate(this._state);
   }
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-list')
+      .addEventListener('change', this.#changeType);
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('input', this.#changeDestination);
+    this.element.querySelector('.event__input--price')
+      .addEventListener('input', this.#changePrice);
+    this.element.querySelector('.event__available-offers')
+      .addEventListener('input', this.#changeOffers);
+
+    this.element.querySelector('#event-start-time-1')
+      .addEventListener('input', this.#changeDateFrom);
+    this.element.querySelector('#event-end-time-1')
+      .addEventListener('input', this.#changeDateTo);
+  };
+
+  _restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setFormSubmitListener(this._callback.formSubmit);
+    this.setCloseButtonClickListener(this._callback.closeForm);
+    this.setDeleteButtonClickListener(this._callback.delete);
+  };
+
+  #changeDateTo = (evt) => {
+    evt.preventDefault();
+    const newDate = event.target.value;
+    this._setState({
+      dateTo: newDate, // не в том формате
+    });
+  };
+
+  #changeDateFrom = (evt) => {
+    evt.preventDefault();
+    const newDate = event.target.value;
+    this._setState({
+      dateFrom: newDate, // не в том формате
+    });
+  };
+
+  #changeType = (evt) => {
+    evt.preventDefault();
+    const fieldset = this.element.querySelector('.event__type-list');
+    const newType = fieldset.querySelector('input:checked').value;
+    this.updateElement({
+      type: newType,
+      offers: new Array(),
+    });
+  };
+
+  #changePrice = (evt) => {
+    evt.preventDefault();
+    const newPrice = event.target.value;
+    this._setState({
+      basePrice: newPrice,
+    });
+  };
+
+  #changeOffers = (evt) => {
+    evt.preventDefault();
+    const offersField = this.element.querySelector('.event__available-offers');
+    const checkboxes = offersField.querySelectorAll('.event__offer-checkbox:checked');
+
+    const checkedIds = new Array();
+
+    checkboxes.forEach((checkbox) => {
+      checkedIds.push(checkbox.id);
+    });
+
+    this._setState({
+      offers: checkedIds,
+    });
+  };
+
+  #changeDestination = (evt) => {
+    evt.preventDefault();
+    const newDestinationName = event.target.value;
+    let newDestination = null;
+    Object.values(DESTINATIONS).forEach((destination) => {
+      if (newDestinationName === destination.name) {
+        newDestination = destination;
+        this.updateElement({
+          destination: newDestination,
+          isDestination: true,
+        });
+      }
+    });
+
+    this._setState({
+      destination: {name: newDestinationName},
+      isDestination: false,
+    });
+  };
 
   setCloseButtonClickListener = (callback) => {
     this._callback.closeForm = callback;
@@ -238,6 +333,12 @@ class EventEditFormView extends AbstractStatefulView {
 
   removeEscKeydownListener = () => {
     document.removeEventListener('keydown', this.#escKeydownHandler);
+  };
+
+  reset = (event) => {
+    this.updateElement(
+      EventEditFormView.parseEventToState(event),
+    );
   };
 }
 
