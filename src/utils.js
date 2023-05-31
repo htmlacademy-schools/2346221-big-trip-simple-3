@@ -68,8 +68,6 @@ const sortDays = (taskA, taskB) => {
   return weight ?? dayjs(taskA.dateTo).diff(dayjs(taskB.dateTo));
 };
 
-const sortPrices = (taskA, taskB) => {
-  return taskA.basePrise - taskB.basePrise;
-};
+const sortPrices = (taskA, taskB) => taskB.basePrice - taskA.basePrice;
 
 export { sortDays, sortPrices, updateItem, getRandomInt, getRandomArrayElement, getDate, getTime, getFullDataTime, createOnEscKeydownFunction };

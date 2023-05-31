@@ -13,28 +13,25 @@ class TripPresenter {
   #tripEventPresenter = new Map();
   #container;
   #tripEventsModel;
-  #tripEvents;
+  #tripEvents = [];
 
   #currentSortType = SORT_TYPE.DAY;
-  #sourcedTripEvents = [];
 
-  init(container, tripEventsModel) {
+  constructor (container, tripEventsModel) {
     this.#container = container;
     this.#tripEventsModel = tripEventsModel;
-    // получаем пункты для отрисовки
-    this.#tripEvents = this.#tripEventsModel.tripEvents;
-
-    render(this.#eventSorter, this.#container);
-    //this.#renderSort();
-    render(this.#tripEventsList, this.#container);
-    if (this.#tripEvents.length){
-      for (let i = 0; i < this.#tripEvents.length; i++) {
-        this.#renderEvent(this.#tripEvents[i]);
-      }
-    } else {
-      this.#renderEmptyList();
-    }
   }
+
+  init() {
+    this.#tripEvents = [...this.#tripEventsModel.tripEvents];
+    this.#tripEvents.sort(sortDays);
+    this.#renderBoard();
+  }
+
+  #renderEventList = () => {
+    render(this.#tripEventsList, this.#container);
+    this.#renderEvents();
+  };
 
   #renderEmptyList = () => {
     const emptyListComponent = new EmptyListView('Everything');
@@ -47,6 +44,10 @@ class TripPresenter {
     this.#tripEventPresenter.set(task.id, tripEventPresenter);
   };
 
+  #renderEvents = () => {
+    this.#tripEvents.forEach((task) => this.#renderEvent(task));
+  };
+
   #clearEventList = () => {
     this.#tripEventPresenter.forEach((presenter) => presenter.destroy());
     this.#tripEventPresenter.clear();
@@ -54,7 +55,6 @@ class TripPresenter {
 
   #handleEventChange = (updatedEvent) => {
     this.#tripEvents = updateItem(this.#tripEvents, updatedEvent);
-    this.#sourcedTripEvents = updateItem(this.#sourcedTripEvents, updatedEvent);
     this.#tripEventPresenter.get(updatedEvent.id).init(updatedEvent);
   };
 
@@ -73,8 +73,8 @@ class TripPresenter {
     }
 
     this.#sortEvents(sortType);
-    // - Очищаем список
-    // - Рендерим список заново
+    this.#clearEventList();
+    this.#renderEventList();
   };
 
   #sortEvents = (sortType) => {
@@ -85,11 +85,18 @@ class TripPresenter {
       case SORT_TYPE.PRICE:
         this.#tripEvents.sort(sortPrices);
         break;
-      default:
-        this.#tripEvents = [...this.#sourcedTripEvents];
     }
 
     this.#currentSortType = sortType;
+  };
+
+  #renderBoard = () => {
+    if (this.#tripEvents.length === 0) {
+      this.#renderEmptyList();
+      return;
+    }
+    this.#renderSort();
+    this.#renderEventList();
   };
 }
 
