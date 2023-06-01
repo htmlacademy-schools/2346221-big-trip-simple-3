@@ -38,11 +38,6 @@ class TripPresenter {
     return this.#tripEventsModel.events;
   }
 
-  #renderEventList = () => {
-    render(this.#tripEventsList, this.#container);
-    this.#renderEvents();
-  };
-
   #renderEmptyList = () => {
     render(this.#emptyListComponent, this.#container);
   };
@@ -72,13 +67,13 @@ class TripPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case USER_ACTION.UPDATE_TASK:
-        this.#tripEventsModel.updateTask(updateType, update);
+        this.#tripEventsModel.updateEvent(updateType, update);
         break;
       case USER_ACTION.ADD_TASK:
-        this.#tripEventsModel.addTask(updateType, update);
+        this.#tripEventsModel.addEvent(updateType, update);
         break;
       case USER_ACTION.DELETE_TASK:
-        this.#tripEventsModel.deleteTask(updateType, update);
+        this.#tripEventsModel.deleteEvent(updateType, update);
         break;
     }
   };
@@ -128,7 +123,9 @@ class TripPresenter {
       return;
     }
     this.#renderSort();
-    this.#renderEventList();
+
+    render(this.#tripEventsList, this.#container);
+    this.#renderEvents();
   };
 }
 

@@ -31,7 +31,7 @@ const createOffersTemplate = (type, offers) => {
   let template = '';
   const allOffers = OFFERS_BY_TYPE[`${type}`].offers;
   Object.values(allOffers).forEach(({id, title, price}) => {
-    if (offers.includes(id)) {
+    if (offers.includes(id) || offers.includes(String(id))) {
       template += `
             <div class="event__offer-selector">
               <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="${title}" checked>
@@ -228,7 +228,7 @@ class EventEditFormView extends AbstractStatefulView {
 
   #setDateToPicker = () => {
     this.#datepicker = flatpickr(
-      this.element.querySelector('[name="event-start-time"]'),
+      this.element.querySelector('[name="event-end-time"]'),
       {
         enableTime: true,
         dateFormat: 'Y/m/d H:i',
@@ -246,7 +246,7 @@ class EventEditFormView extends AbstractStatefulView {
 
   #setDateFromPicker = () => {
     this.#datepicker = flatpickr(
-      this.element.querySelector('[name="event-end-time"]'),
+      this.element.querySelector('[name="event-start-time"]'),
       {
         enableTime: true,
         dateFormat: 'Y/m/d H:i',
@@ -339,7 +339,7 @@ class EventEditFormView extends AbstractStatefulView {
 
   #deleteButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.delete();
+    this._callback.delete(EventEditFormView.parseStateToEvent(this._state));
   };
 
   setEscKeydownListener = (callback) => {

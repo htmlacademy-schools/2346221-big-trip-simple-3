@@ -48,6 +48,8 @@ const getWeightForNullDate = (dateA, dateB) => {
   return null;
 };
 
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'm');
+
 const sortDays = (taskA, taskB) => {
   const weight = getWeightForNullDate(taskA.dateTo, taskB.dateTo);
 
@@ -56,4 +58,4 @@ const sortDays = (taskA, taskB) => {
 
 const sortPrices = (taskA, taskB) => taskB.basePrice - taskA.basePrice;
 
-export { sortDays, sortPrices, getRandomInt, getRandomArrayElement, getDate, getTime, getFullDataTime, createOnEscKeydownFunction };
+export { isDatesEqual, sortDays, sortPrices, getRandomInt, getRandomArrayElement, getDate, getTime, getFullDataTime, createOnEscKeydownFunction };
