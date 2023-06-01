@@ -32,20 +32,6 @@ const createOnEscKeydownFunction = (element, onKeydownFunction) => {
   return onEscKeydown;
 };
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
     return 0;
@@ -70,4 +56,4 @@ const sortDays = (taskA, taskB) => {
 
 const sortPrices = (taskA, taskB) => taskB.basePrice - taskA.basePrice;
 
-export { sortDays, sortPrices, updateItem, getRandomInt, getRandomArrayElement, getDate, getTime, getFullDataTime, createOnEscKeydownFunction };
+export { sortDays, sortPrices, getRandomInt, getRandomArrayElement, getDate, getTime, getFullDataTime, createOnEscKeydownFunction };

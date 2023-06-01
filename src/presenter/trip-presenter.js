@@ -18,6 +18,8 @@ class TripPresenter {
   constructor (container, tripEventsModel) {
     this.#container = container;
     this.#tripEventsModel = tripEventsModel;
+
+    this.#tripEventsModel.addObserver(this.#handleModelEvent);
   }
 
   init() {
@@ -27,12 +29,12 @@ class TripPresenter {
   get events() {
     switch (this.#currentSortType) {
       case SORT_TYPE.DAY:
-        return [...this.#tripEventsModel.tripEvents].sort(sortDays);
+        return [...this.#tripEventsModel.events].sort(sortDays);
       case SORT_TYPE.PRICE:
-        return [...this.#tripEventsModel.tripEvents].sort(sortPrices);
+        return [...this.#tripEventsModel.events].sort(sortPrices);
     }
 
-    return this.#tripEventsModel.tripEvents;
+    return this.#tripEventsModel.events;
   }
 
   #renderEventList = () => {
@@ -46,7 +48,7 @@ class TripPresenter {
   };
 
   #renderEvent = (task) => {
-    const tripEventPresenter = new TripEventPresenter(this.#tripEventsList, this.#handleEventChange, this.#handleModeChange);
+    const tripEventPresenter = new TripEventPresenter(this.#tripEventsList, this.#handleViewAction, this.#handleModeChange);
     tripEventPresenter.init(task);
     this.#tripEventPresenter.set(task.id, tripEventPresenter);
   };
@@ -60,9 +62,20 @@ class TripPresenter {
     this.#tripEventPresenter.clear();
   };
 
-  #handleEventChange = (updatedEvent) => {
-    // Здесь будем вызывать обновление модели
-    this.#tripEventPresenter.get(updatedEvent.id).init(updatedEvent);
+  #handleViewAction = (actionType, updateType, update) => {
+    console.log(actionType, updateType, update);
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
+  };
+
+  #handleModelEvent = (updateType, data) => {
+    console.log(updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялось описание)
+    // - обновить список (например, когда задача ушла в архив)
+    // - обновить всю доску (например, при переключении фильтра)
   };
 
   #handleModeChange = () => {

@@ -187,11 +187,9 @@ class EventEditFormView extends AbstractStatefulView {
 
   static parseStateToEvent = (state) => {
     const event = {...state};
-
     if (!event.isDestination) {
       event.destination = null;
     }
-
     delete event.isDestination;
 
     return event;
@@ -295,21 +293,23 @@ class EventEditFormView extends AbstractStatefulView {
   #changeDestination = (evt) => {
     evt.preventDefault();
     const newDestinationName = event.target.value;
-    let newDestination = null;
+    let isNewDestination = false;
     Object.values(DESTINATIONS).forEach((destination) => {
       if (newDestinationName === destination.name) {
-        newDestination = destination;
+        isNewDestination = true;
         this.updateElement({
-          destination: newDestination,
+          destination,
           isDestination: true,
         });
       }
     });
 
-    this._setState({
-      destination: {name: newDestinationName},
-      isDestination: false,
-    });
+    if (!isNewDestination) {
+      this._setState({
+        destination: {name: newDestinationName},
+        isDestination: false,
+      });
+    }
   };
 
   setCloseButtonClickListener = (callback) => {

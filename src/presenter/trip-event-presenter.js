@@ -2,6 +2,7 @@ import { render, replace, remove } from '../framework/render.js';
 import EventEditFormView from '../view/event-edit-form-view.js';
 import TripEventView from '../view/trip-event-view.js';
 import EmptyListView from '../view/empty-list-view.js';
+import {USER_ACTION, UPDATE_TYPE} from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -37,7 +38,7 @@ export default class TripEventPresenter {
     this.#eventComponent.setEditClickListener(this.#replaceEventToForm);
 
     // нажатие на кнопку Save
-    this.#eventEditorComponent.setFormSubmitListener(this.#replaceFormToEvent);
+    this.#eventEditorComponent.setFormSubmitListener(this.#handleFormSubmit);
     // нажатие на стрелку, чтобы закрыть форму
     this.#eventEditorComponent.setCloseButtonClickListener(this.#replaceFormToEvent);
     // нажатие на кнопку Delete
@@ -76,9 +77,13 @@ export default class TripEventPresenter {
     replace(this.#eventEditorComponent, this.#eventComponent);
   };
 
-  #handleFormSubmit = (tripEvent) => {
+  #handleFormSubmit = (event) => {
     this.#replaceFormToEvent();
-    this.#changeData(tripEvent);
+    this.#changeData(
+      USER_ACTION.UPDATE_TASK,
+      UPDATE_TYPE.MINOR,
+      event,
+    );
   };
 
   destroy = () => {
