@@ -4,18 +4,19 @@ import EventListSortingView from '../view/event-list-sorting-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
 import { filter, sortDays, sortPrices } from '../utils.js';
-import { SORT_TYPE, UPDATE_TYPE, USER_ACTION } from '../const.js';
+import { SORT_TYPE, UPDATE_TYPE, USER_ACTION, FILTER_TYPE } from '../const.js';
 
 class TripPresenter {
   #tripEventsList = new TripEventsListView();
-  #emptyListComponent = new EmptyListView('Everything');
+  #emptyListComponent = null;
   #eventSorter = null;
   #tripEventPresenter = new Map();
   #container = null;
   #tripEventsModel = null;
   #filterModel = null;
 
-  #currentSortType = SORT_TYPE.DAY;
+  #filterType = FILTER_TYPE.EVERYTHING;
+  #sortType = SORT_TYPE.DAY;
 
   constructor (container, tripEventsModel, filterModel) {
     this.#container = container;
@@ -31,11 +32,11 @@ class TripPresenter {
   }
 
   get events() {
-    const filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter;
     const events = this.#tripEventsModel.events;
-    const filteredTasks = filter[filterType](events);
+    const filteredTasks = filter[this.#filterType](events);
 
-    switch (this.#currentSortType) {
+    switch (this.#sortType) {
       case SORT_TYPE.DAY:
         return filteredTasks.sort(sortDays);
       case SORT_TYPE.PRICE:
@@ -46,6 +47,7 @@ class TripPresenter {
   }
 
   #renderEmptyList = () => {
+    this.#emptyListComponent = new EmptyListView(this.#filterType);
     render(this.#emptyListComponent, this.#container);
   };
 
@@ -64,10 +66,12 @@ class TripPresenter {
     this.#tripEventPresenter.clear();
 
     remove(this.#eventSorter);
-    remove(this.#emptyListComponent);
+    if (this.#emptyListComponent) {
+      remove(this.#emptyListComponent);
+    }
 
     if (resetSortType) {
-      this.#currentSortType = SORT_TYPE.DAY;
+      this.#sortType = SORT_TYPE.DAY;
     }
   };
 
@@ -106,18 +110,18 @@ class TripPresenter {
   };
 
   #renderSort = () => {
-    this.#eventSorter = new EventListSortingView(this.#currentSortType);
+    this.#eventSorter = new EventListSortingView(this.#sortType);
     this.#eventSorter.setSortTypeChangeHandler(this.#handleSortTypeChange);
 
     render(this.#eventSorter, this.#container, RenderPosition.AFTERBEGIN);
   };
 
   #handleSortTypeChange = (sortType) => {
-    if (this.#currentSortType === sortType) {
+    if (this.#sortType === sortType) {
       return;
     }
 
-    this.#currentSortType = sortType;
+    this.#sortType = sortType;
     this.#clearEventList();
     this.#renderBoard();
   };
