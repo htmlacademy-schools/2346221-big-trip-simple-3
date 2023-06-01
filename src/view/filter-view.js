@@ -15,7 +15,7 @@ const createEventFiltersTemplate = (currentFilter) => `
   </form>
 `;
 
-class filtersView extends AbstractView {
+class FilterView extends AbstractView {
   #currentFilter = null;
 
   constructor(currentFilterType) {
@@ -38,8 +38,8 @@ class filtersView extends AbstractView {
 
   #filterChangeHandler = (evt) => {
     evt.preventDefault();
-    this._callback.chageFilter();
+    this._callback.chageFilter(evt.target.value);
   };
 }
 
-export default filtersView;
+export default FilterView;
