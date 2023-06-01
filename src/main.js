@@ -1,18 +1,22 @@
 import TripPresenter from './presenter/trip-presenter.js';
 import { render } from './framework/render.js';
-import EventFiltersView from './view/event-filters-view.js';
+import filtersView from './view/filters-view.js';
 import TripEventsModel from './model/trip-events-model.js';
+import FilterModel from './model/filter-model.js';
+import { FILTER_TYPE } from './const.js';
 
-const tripFiltersSection = document.querySelector('.trip-controls__filters');
-const tripEventsSection = document.querySelector('.trip-events');
+const filtersSection = document.querySelector('.trip-controls__filters');
+const eventsSection = document.querySelector('.trip-events');
 
 const tripEventsModel = new TripEventsModel();
-const tripPresenter = new TripPresenter(tripEventsSection, tripEventsModel);
+const filterModel = new FilterModel();
+
+const tripPresenter = new TripPresenter(eventsSection, tripEventsModel);
 tripPresenter.init();
 
-const eventFilters = new EventFiltersView();
+const eventFilters = new filtersView(FILTER_TYPE.EVERYTHING);
 
 const printSelectedFilter = () => console.log(eventFilters.selectedFilter);
 eventFilters.setFilterChangeListener(printSelectedFilter);
-render(eventFilters, tripFiltersSection);
+render(eventFilters, filtersSection);
 
