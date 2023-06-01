@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { FILTER_TYPE } from './const';
 
 const getRandomInt = (min, max) => {
   if (max < min) {
@@ -18,19 +19,6 @@ const getDate = (date) => dayjs(date).format('MMM D');
 const getTime = (date) => dayjs(date).format('HH-mm');
 const getFullDataTime = (date) => dayjs(date).format('DD/MM/YY HH:mm');
 
-const isEscapeKey = (evt) => evt.key === 'Escape';
-
-const createOnEscKeydownFunction = (element, onKeydownFunction) => {
-  const onEscKeydown = (evt) => {
-    if (isEscapeKey(evt)) {
-      evt.preventDefault();
-      onKeydownFunction();
-    }
-  };
-  element.addEventListener('keydown', onEscKeydown);
-
-  return onEscKeydown;
-};
 
 const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
@@ -58,4 +46,15 @@ const sortDays = (taskA, taskB) => {
 
 const sortPrices = (taskA, taskB) => taskB.basePrice - taskA.basePrice;
 
-export { isDatesEqual, sortDays, sortPrices, getRandomInt, getRandomArrayElement, getDate, getTime, getFullDataTime, createOnEscKeydownFunction };
+const isDateFuture = (date) => {
+  const currentDate = dayjs();
+  const targetDate = dayjs(date);
+  return targetDate.isAfter(currentDate, 'm');
+};
+
+const filter = {
+  [FILTER_TYPE.EVERYTHING]: (events) => events,
+  [FILTER_TYPE.FUTURE]: (events) => events.filter((event) => isDateFuture(event.dateTo)),
+};
+
+export { filter, isDatesEqual, sortDays, sortPrices, getRandomInt, getRandomArrayElement, getDate, getTime, getFullDataTime };

@@ -9,7 +9,7 @@ const eventsSection = document.querySelector('.trip-events');
 const tripEventsModel = new TripEventsModel();
 const filterModel = new FilterModel();
 
-const tripPresenter = new TripPresenter(eventsSection, tripEventsModel);
+const tripPresenter = new TripPresenter(eventsSection, tripEventsModel, filterModel);
 tripPresenter.init();
 const filterPresenter = new FilterPresenter(filtersSection, filterModel, tripEventsModel);
 

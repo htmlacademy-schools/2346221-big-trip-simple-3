@@ -3,7 +3,7 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import EventListSortingView from '../view/event-list-sorting-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
-import { sortDays, sortPrices } from '../utils.js';
+import { filter, sortDays, sortPrices } from '../utils.js';
 import { SORT_TYPE, UPDATE_TYPE, USER_ACTION } from '../const.js';
 
 class TripPresenter {
@@ -11,16 +11,19 @@ class TripPresenter {
   #emptyListComponent = new EmptyListView('Everything');
   #eventSorter = null;
   #tripEventPresenter = new Map();
-  #container;
-  #tripEventsModel;
+  #container = null;
+  #tripEventsModel = null;
+  #filterModel = null;
 
   #currentSortType = SORT_TYPE.DAY;
 
-  constructor (container, tripEventsModel) {
+  constructor (container, tripEventsModel, filterModel) {
     this.#container = container;
     this.#tripEventsModel = tripEventsModel;
+    this.#filterModel = filterModel;
 
     this.#tripEventsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   init() {
@@ -28,14 +31,18 @@ class TripPresenter {
   }
 
   get events() {
+    const filterType = this.#filterModel.filter;
+    const events = this.#tripEventsModel.events;
+    const filteredTasks = filter[filterType](events);
+
     switch (this.#currentSortType) {
       case SORT_TYPE.DAY:
-        return [...this.#tripEventsModel.events].sort(sortDays);
+        return filteredTasks.sort(sortDays);
       case SORT_TYPE.PRICE:
-        return [...this.#tripEventsModel.events].sort(sortPrices);
+        return filteredTasks.sort(sortPrices);
     }
 
-    return this.#tripEventsModel.events;
+    return filteredTasks;
   }
 
   #renderEmptyList = () => {
