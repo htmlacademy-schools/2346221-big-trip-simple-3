@@ -3,8 +3,6 @@ import { OFFERS_BY_TYPE } from '../mock/trip-event.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const createOffersTemplate = (type, offers) => {
-  console.log(type);
-  console.log(offers);
   let template = '';
   const allOffers = OFFERS_BY_TYPE[`${type}`].offers;
   Object.values(allOffers).forEach(({id, title, price}) => {
