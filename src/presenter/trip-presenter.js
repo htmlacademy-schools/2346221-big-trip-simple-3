@@ -4,7 +4,7 @@ import EventListSortingView from '../view/event-list-sorting-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
 import { sortDays, sortPrices } from '../utils.js';
-import { SORT_TYPE } from '../const.js';
+import { SORT_TYPE, UPDATE_TYPE, USER_ACTION } from '../const.js';
 
 class TripPresenter {
   #tripEventsList = new TripEventsListView();
@@ -63,19 +63,33 @@ class TripPresenter {
   };
 
   #handleViewAction = (actionType, updateType, update) => {
-    console.log(actionType, updateType, update);
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
+    switch (actionType) {
+      case USER_ACTION.UPDATE_TASK:
+        this.#tripEventsModel.updateTask(updateType, update);
+        break;
+      case USER_ACTION.ADD_TASK:
+        this.#tripEventsModel.addTask(updateType, update);
+        break;
+      case USER_ACTION.DELETE_TASK:
+        this.#tripEventsModel.deleteTask(updateType, update);
+        break;
+    }
   };
 
   #handleModelEvent = (updateType, data) => {
     console.log(updateType, data);
-    // В зависимости от типа изменений решаем, что делать:
-    // - обновить часть списка (например, когда поменялось описание)
-    // - обновить список (например, когда задача ушла в архив)
-    // - обновить всю доску (например, при переключении фильтра)
+    switch (updateType) {
+      case UPDATE_TYPE.PATCH:
+        // - обновить часть списка (например, когда поменялось описание)
+        this.#tripEventPresenter.get(data.id).init(data);
+        break;
+      case UPDATE_TYPE.MINOR:
+        // - обновить список (например, когда задача ушла в архив)
+        break;
+      case UPDATE_TYPE.MAJOR:
+        // - обновить всю доску (например, при переключении фильтра)
+        break;
+    }
   };
 
   #handleModeChange = () => {
