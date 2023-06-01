@@ -3,7 +3,6 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import EventListSortingView from '../view/event-list-sorting-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
-import { updateItem } from '../utils.js';
 import { sortDays, sortPrices } from '../utils.js';
 import { SORT_TYPE } from '../const.js';
 
@@ -13,7 +12,6 @@ class TripPresenter {
   #tripEventPresenter = new Map();
   #container;
   #tripEventsModel;
-  #tripEvents = [];
 
   #currentSortType = SORT_TYPE.DAY;
 
@@ -23,12 +21,17 @@ class TripPresenter {
   }
 
   init() {
-    this.#tripEvents = [...this.#tripEventsModel.tripEvents];
-    this.#tripEvents.sort(sortDays);
     this.#renderBoard();
   }
 
   get events() {
+    switch (this.#currentSortType) {
+      case SORT_TYPE.DAY:
+        return [...this.#tripEventsModel.tripEvents].sort(sortDays);
+      case SORT_TYPE.PRICE:
+        return [...this.#tripEventsModel.tripEvents].sort(sortPrices);
+    }
+
     return this.#tripEventsModel.tripEvents;
   }
 
@@ -49,7 +52,7 @@ class TripPresenter {
   };
 
   #renderEvents = () => {
-    this.#tripEvents.forEach((task) => this.#renderEvent(task));
+    this.events.forEach((task) => this.#renderEvent(task));
   };
 
   #clearEventList = () => {
@@ -58,7 +61,7 @@ class TripPresenter {
   };
 
   #handleEventChange = (updatedEvent) => {
-    this.#tripEvents = updateItem(this.#tripEvents, updatedEvent);
+    // Здесь будем вызывать обновление модели
     this.#tripEventPresenter.get(updatedEvent.id).init(updatedEvent);
   };
 
@@ -76,26 +79,13 @@ class TripPresenter {
       return;
     }
 
-    this.#sortEvents(sortType);
+    this.#currentSortType = sortType;
     this.#clearEventList();
     this.#renderEventList();
   };
 
-  #sortEvents = (sortType) => {
-    switch (sortType) {
-      case SORT_TYPE.DAY:
-        this.#tripEvents.sort(sortDays);
-        break;
-      case SORT_TYPE.PRICE:
-        this.#tripEvents.sort(sortPrices);
-        break;
-    }
-
-    this.#currentSortType = sortType;
-  };
-
   #renderBoard = () => {
-    if (this.#tripEvents.length === 0) {
+    if (!this.events) {
       this.#renderEmptyList();
       return;
     }
