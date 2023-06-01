@@ -1,4 +1,4 @@
-import { render, RenderPosition } from '../framework/render.js';
+import { render, RenderPosition, remove } from '../framework/render.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
 import EventListSortingView from '../view/event-list-sorting-view.js';
 import EmptyListView from '../view/empty-list-view.js';
@@ -8,7 +8,8 @@ import { SORT_TYPE, UPDATE_TYPE, USER_ACTION } from '../const.js';
 
 class TripPresenter {
   #tripEventsList = new TripEventsListView();
-  #eventSorter = new EventListSortingView();
+  #emptyListComponent = new EmptyListView('Everything');
+  #eventSorter = null;
   #tripEventPresenter = new Map();
   #container;
   #tripEventsModel;
@@ -43,8 +44,7 @@ class TripPresenter {
   };
 
   #renderEmptyList = () => {
-    const emptyListComponent = new EmptyListView('Everything');
-    render(emptyListComponent, this.#container);
+    render(this.#emptyListComponent, this.#container);
   };
 
   #renderEvent = (task) => {
@@ -57,9 +57,16 @@ class TripPresenter {
     this.events.forEach((task) => this.#renderEvent(task));
   };
 
-  #clearEventList = () => {
+  #clearEventList = ({resetSortType = false} = {}) => {
     this.#tripEventPresenter.forEach((presenter) => presenter.destroy());
     this.#tripEventPresenter.clear();
+
+    remove(this.#eventSorter);
+    remove(this.#emptyListComponent);
+
+    if (resetSortType) {
+      this.#currentSortType = SORT_TYPE.DAY;
+    }
   };
 
   #handleViewAction = (actionType, updateType, update) => {
@@ -77,17 +84,17 @@ class TripPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-    console.log(updateType, data);
     switch (updateType) {
       case UPDATE_TYPE.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this.#tripEventPresenter.get(data.id).init(data);
         break;
       case UPDATE_TYPE.MINOR:
-        // - обновить список (например, когда задача ушла в архив)
+        this.#clearEventList();
+        this.#renderBoard();
         break;
       case UPDATE_TYPE.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
+        this.#clearEventList({resetSortType: true});
+        this.#renderBoard();
         break;
     }
   };
@@ -97,8 +104,10 @@ class TripPresenter {
   };
 
   #renderSort = () => {
-    render(this.#eventSorter, this.#container, RenderPosition.AFTERBEGIN);
+    this.#eventSorter = new EventListSortingView(this.#currentSortType);
     this.#eventSorter.setSortTypeChangeHandler(this.#handleSortTypeChange);
+
+    render(this.#eventSorter, this.#container, RenderPosition.AFTERBEGIN);
   };
 
   #handleSortTypeChange = (sortType) => {
@@ -108,11 +117,13 @@ class TripPresenter {
 
     this.#currentSortType = sortType;
     this.#clearEventList();
-    this.#renderEventList();
+    this.#renderBoard();
   };
 
   #renderBoard = () => {
-    if (!this.events) {
+    const events = this.events;
+    const eventCount = events.length;
+    if (eventCount === 0) {
       this.#renderEmptyList();
       return;
     }
