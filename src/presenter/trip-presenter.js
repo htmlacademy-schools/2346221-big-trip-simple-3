@@ -28,6 +28,10 @@ class TripPresenter {
     this.#renderBoard();
   }
 
+  get events() {
+    return this.#tripEventsModel.tripEvents;
+  }
+
   #renderEventList = () => {
     render(this.#tripEventsList, this.#container);
     this.#renderEvents();
