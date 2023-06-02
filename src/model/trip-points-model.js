@@ -3,6 +3,16 @@ import Observable from '../framework/observable.js';
 
 export default class TripPointsModel extends Observable {
   #points = generateTripPoints(5);
+  #pointsApiService = null;
+
+  constructor(tasksApiService) {
+    super();
+    this.#pointsApiService = tasksApiService;
+
+    this.#pointsApiService.points.then((points) => {
+      console.log(points);
+    });
+  }
 
   get points () {
     return this.#points;
