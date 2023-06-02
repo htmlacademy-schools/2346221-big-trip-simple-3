@@ -33,7 +33,8 @@ const handleNewPointButtonClick = () => {
   newPointButtonComponent.element.disabled = true;
 };
 
-render(newPointButtonComponent, buttonSection);
-newPointButtonComponent.setClickListener(handleNewPointButtonClick);
-
-tripPointsModel.init();
+tripPointsModel.init()
+  .finally(() => {
+    render(newPointButtonComponent, buttonSection);
+    newPointButtonComponent.setClickListener(handleNewPointButtonClick);
+  });
