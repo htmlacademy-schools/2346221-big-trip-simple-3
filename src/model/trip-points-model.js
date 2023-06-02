@@ -1,4 +1,5 @@
 import Observable from '../framework/observable.js';
+import { UPDATE_TYPE } from '../const.js';
 
 export default class TripPointsModel extends Observable {
   #points = [];
@@ -16,6 +17,8 @@ export default class TripPointsModel extends Observable {
     } catch(err) {
       this.#points = [];
     }
+
+    this._notify(UPDATE_TYPE.INIT);
   }
 
   get points () {
