@@ -1,17 +1,21 @@
-import { generateTripPoints } from '../mock/trip-point.js';
 import Observable from '../framework/observable.js';
 
 export default class TripPointsModel extends Observable {
-  #points = generateTripPoints(5);
+  #points = [];
   #pointsApiService = null;
 
   constructor(tasksApiService) {
     super();
     this.#pointsApiService = tasksApiService;
+  }
 
-    this.#pointsApiService.points.then((points) => {
-      console.log(points.map(this.#adaptToClient));
-    });
+  async init() {
+    try {
+      const points = await this.#pointsApiService.points;
+      this.#points = points.map(this.#adaptToClient);
+    } catch(err) {
+      this.#points = [];
+    }
   }
 
   get points () {

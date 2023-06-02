@@ -36,3 +36,4 @@ const handleNewPointButtonClick = () => {
 render(newPointButtonComponent, buttonSection);
 newPointButtonComponent.setClickListener(handleNewPointButtonClick);
 
+tripPointsModel.init();
