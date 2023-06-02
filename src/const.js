@@ -1,15 +1,3 @@
-const TRIP_POINT_TYPES = [
-  'taxi',
-  'bus',
-  'train',
-  'ship',
-  'drive',
-  'flight',
-  'check-in',
-  'sightseeing',
-  'restaurant',
-];
-
 const SORT_TYPE = {
   DAY: 'day',
   PRICE: 'price',
@@ -33,12 +21,5 @@ const FILTER_TYPE = {
   FUTURE: 'future',
 };
 
-const DESTINATION_NAMES = [
-  'Moscow',
-  'SPB',
-  'Voroneg',
-  'Tula',
-  'Orel',
-];
 
-export { DESTINATION_NAMES, FILTER_TYPE, TRIP_POINT_TYPES, SORT_TYPE, USER_ACTION, UPDATE_TYPE };
+export { FILTER_TYPE, SORT_TYPE, USER_ACTION, UPDATE_TYPE };

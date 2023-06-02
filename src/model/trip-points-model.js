@@ -3,6 +3,8 @@ import { UPDATE_TYPE } from '../const.js';
 
 export default class TripPointsModel extends Observable {
   #points = [];
+  #destinations = null;
+  #offers = null;
   #pointsApiService = null;
 
   constructor(tasksApiService) {
@@ -13,9 +15,18 @@ export default class TripPointsModel extends Observable {
   async init() {
     try {
       const points = await this.#pointsApiService.points;
+      this.#destinations = await this.#pointsApiService.destinations;
+      this.#offers = await this.#pointsApiService.offers;
+
+      console.log(this.#destinations);
+      console.log(this.#offers);
+
       this.#points = points.map(this.#adaptToClient);
+      console.log(this.#points);
     } catch(err) {
       this.#points = [];
+      this.#destinations = null;
+      this.#offers = null;
     }
 
     this._notify(UPDATE_TYPE.INIT);
@@ -23,6 +34,14 @@ export default class TripPointsModel extends Observable {
 
   get points () {
     return this.#points;
+  }
+
+  get destinations () {
+    return this.#destinations;
+  }
+
+  get offers () {
+    return this.#offers;
   }
 
   updatePoint = async (updateType, update) => {

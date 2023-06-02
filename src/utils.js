@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { FILTER_TYPE, DESTINATION_NAMES } from './const';
+import { FILTER_TYPE } from './const';
 
 const getDate = (date) => dayjs(date).format('MMM D');
 const getTime = (date) => dayjs(date).format('HH-mm');
@@ -42,11 +42,13 @@ const filter = {
   [FILTER_TYPE.FUTURE]: (points) => points.filter((point) => isDateFuture(point.dateTo)),
 };
 
-const isFormValid = (state) => {
-  if (state.destination && state.basePrice) {
-    const isDestination = DESTINATION_NAMES.includes(state.destination.name);
-    return isDestination && /^\d+$/.test(state.basePrice);
-  }
+const isFormValid = (state, availableDestinations) => {
+  Object.values(availableDestinations).forEach(({id}) => {
+    if (state.destination === id && state.basePrice) {
+      return /^\d+$/.test(state.basePrice);
+    }
+  });
+
   return false;
 };
 

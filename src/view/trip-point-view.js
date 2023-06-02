@@ -1,25 +1,29 @@
 import { getDate, getTime } from '../utils.js';
-import { OFFERS_BY_TYPE } from '../mock/trip-point.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
-const createOffersTemplate = (type, offers) => {
+const createOffersTemplate = (type, offers, availableOffers) => {
   let template = '';
-  const allOffers = OFFERS_BY_TYPE[`${type}`].offers;
-  Object.values(allOffers).forEach(({id, title, price}) => {
-    if (offers.includes(id) || offers.includes(String(id))) {
-      template += `
-        <li class="event__offer">
-          <span class="event__offer-title">${title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${price}</span>
-        </li>
-        `;
+  const allOffers = Object.values(availableOffers);
+  allOffers.forEach(({type: pointType, offers: typeOffers}) => {
+    if (type === pointType) {
+      typeOffers.forEach(({id, title, price}) => {
+        if (offers.includes(id) || offers.includes(String(id))) {
+          template += `
+            <li class="event__offer">
+              <span class="event__offer-title">${title}</span>
+              &plus;&euro;&nbsp;
+              <span class="event__offer-price">${price}</span>
+            </li>
+            `;
+        }
+      });
     }
   });
+
   return template;
 };
 
-const createTripPointTemplate = (tripInfo) => {
+const createTripPointTemplate = (tripInfo, availableDestinations, availableOffers) => {
   const {dateFrom, dateTo, offers, type, destination, basePrice} = tripInfo;
 
   const tripDate = dateFrom !== null
@@ -35,8 +39,9 @@ const createTripPointTemplate = (tripInfo) => {
     : 'No time';
 
   const destinationName = destination !== null
-    ? destination.name
+    ? availableDestinations[destination - 1].name
     : 'No destination';
+
   return `
   <li class="trip-events__item">
     <div class="event">
@@ -57,7 +62,7 @@ const createTripPointTemplate = (tripInfo) => {
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${createOffersTemplate(type, offers)}
+        ${createOffersTemplate(type, offers, availableOffers)}
       </ul>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
@@ -68,15 +73,20 @@ const createTripPointTemplate = (tripInfo) => {
 };
 
 export default class TripPointView extends AbstractView {
-  #info = null;
+  #point = null;
+  #availableDestinations = null;
+  #availableOffers = null;
 
-  constructor(info) {
+  constructor(destinations, offers, point) {
     super();
-    this.#info = info;
+    this.#availableDestinations = destinations;
+    this.#availableOffers = offers;
+
+    this.#point = point;
   }
 
   get template() {
-    return createTripPointTemplate(this.#info);
+    return createTripPointTemplate(this.#point, this.#availableDestinations, this.#availableOffers);
   }
 
   setEditClickListener = (callback) => {

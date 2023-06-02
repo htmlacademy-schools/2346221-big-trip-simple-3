@@ -20,10 +20,16 @@ export default class TripPointPresenter {
   #point = null;
   #mode = Mode.DEFAULT;
 
-  constructor(container, changeData, changeMode) {
+  #availableDestinations = null;
+  #availableOffers = null;
+
+  constructor(container, changeData, changeMode, destinations, offers) {
     this.#container = container;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+
+    this.#availableDestinations = destinations;
+    this.#availableOffers = offers;
   }
 
   init(point) {
@@ -32,8 +38,8 @@ export default class TripPointPresenter {
     const prevPointComponent = this.#pointComponent;
     const prevPointEditorComponent = this.#pointEditorComponent;
 
-    this.#pointComponent = new TripPointView(point);
-    this.#pointEditorComponent = new PointEditFormView(point);
+    this.#pointComponent = new TripPointView(this.#availableDestinations, this.#availableOffers, point);
+    this.#pointEditorComponent = new PointEditFormView(this.#availableDestinations, this.#availableOffers, point);
 
     this.#pointComponent.setEditClickListener(this.#replacePointToForm);
 

@@ -56,7 +56,7 @@ export default class TripPresenter {
   createTask = (callback) => {
     this.#sortType = SORT_TYPE.DAY;
     this.#filterModel.setFilter(UPDATE_TYPE.MAJOR, FILTER_TYPE.EVERYTHING);
-    this.#newPointPresenter.init(callback);
+    this.#newPointPresenter.init(callback, this.#tripPointsModel.destinations, this.#tripPointsModel.offers);
   };
 
   #renderEmptyList = () => {
@@ -64,10 +64,12 @@ export default class TripPresenter {
     render(this.#emptyListComponent, this.#container);
   };
 
-  #renderPoint = (task) => {
-    const tripPointPresenter = new TripPointPresenter(this.#tripPointsList, this.#handleViewAction, this.#handleModeChange);
-    tripPointPresenter.init(task);
-    this.#tripPointPresenter.set(task.id, tripPointPresenter);
+  #renderPoint = (point) => {
+    const destinations = this.#tripPointsModel.destinations;
+    const offers = this.#tripPointsModel.offers;
+    const tripPointPresenter = new TripPointPresenter(this.#tripPointsList, this.#handleViewAction, this.#handleModeChange, destinations, offers);
+    tripPointPresenter.init(point);
+    this.#tripPointPresenter.set(point.id, tripPointPresenter);
   };
 
   #renderPoints = () => {

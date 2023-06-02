@@ -1,22 +1,20 @@
 import { getFullDataTime, isFormValid } from '../utils.js';
-import { OFFERS_BY_TYPE, DESTINATION_NAMES, DESTINATIONS } from '../mock/trip-point.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
-import dayjs from 'dayjs';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
 const POINT_TEMPLATE = {
   type: 'flight',
-  dateFrom: dayjs().toISOString(),
-  dateTo: dayjs().toISOString(),
+  dateFrom: new Date(),
+  dateTo: new Date(),
   basePrice: '',
   offers: new Array(),
   destination: null,
 };
 
-const createDestinationTemplate = (destination) => {
-  const {description, pictures} = destination;
+const createDestinationTemplate = (destination, availableDestinations) => {
+  const {description, pictures} = availableDestinations[destination - 1];
 
   let picturesSection = '';
   pictures.forEach(({src, description: photoDescription}) => {
@@ -37,32 +35,26 @@ const createDestinationTemplate = (destination) => {
   ` : '';
 };
 
-const createOffersTemplate = (type, offers) => {
+const createOffersTemplate = (type, offers, availableOffers) => {
   let template = '';
-  const allOffers = OFFERS_BY_TYPE[`${type}`].offers;
-  Object.values(allOffers).forEach(({id, title, price}) => {
-    if (offers.includes(id) || offers.includes(String(id))) {
-      template += `
-            <div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="${title}" checked>
-              <label class="event__offer-label" for="${id}">
-                <span class="event__offer-title">${title}</span>
-                &plus;&euro;&nbsp;
-                <span class="event__offer-price">${price}</span>
-              </label>
-            </div>
-    `;
-    } else {
-      template += `
-            <div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="${title}">
-              <label class="event__offer-label" for="${id}">
-                <span class="event__offer-title">${title}</span>
-                &plus;&euro;&nbsp;
-                <span class="event__offer-price">${price}</span>
-              </label>
-            </div>
-    `;
+  const allOffers = Object.values(availableOffers);
+  allOffers.forEach(({type: pointType, offers: typeOffers}) => {
+    if (type === pointType) {
+      typeOffers.forEach(({id, title, price}) => {
+        const isChecked = (offers.includes(id) || offers.includes(String(id)))
+          ? 'checked'
+          : '';
+        template += `
+          <div class="event__offer-selector">
+            <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="${title}" ${isChecked}>
+            <label class="event__offer-label" for="${id}">
+              <span class="event__offer-title">${title}</span>
+              &plus;&euro;&nbsp;
+              <span class="event__offer-price">${price}</span>
+            </label>
+          </div>
+        `;
+      });
     }
   });
   return (template) ? `
@@ -75,10 +67,9 @@ const createOffersTemplate = (type, offers) => {
     ` : '';
 };
 
-const createTypeImageTemplate = (currentType) => {
+const createTypeImageTemplate = (currentType, availableOffers) => {
   let template = '';
-  const allTypes = Object.keys(OFFERS_BY_TYPE);
-  allTypes.forEach((type) => {
+  Object.values(availableOffers).forEach(({type}) => {
     const checkedValue = (type === currentType) ? 'checked' : '';
     template += `
     <div class="event__type-item">
@@ -87,18 +78,19 @@ const createTypeImageTemplate = (currentType) => {
     </div>
     `;
   });
+
   return template;
 };
 
-const createDestinationListTemplate = () => {
+const createDestinationListTemplate = (availableDestinations) => {
   let template = '';
-  DESTINATION_NAMES.forEach((name) => {
-    template += `<option value="${name}"></option>`;
+  Object.values(availableDestinations).forEach((destination) => {
+    template += `<option value="${destination.name}"></option>`;
   });
   return template;
 };
 
-const createPointEditorTemplate = (data, isPointNew) => {
+const createPointEditorTemplate = (data, isPointNew, availableDestinations, availableOffers) => {
   const {dateFrom, dateTo, offers, type, destination, basePrice, isDestination} = data;
 
   const tripDateFrom = dateFrom !== null
@@ -110,14 +102,14 @@ const createPointEditorTemplate = (data, isPointNew) => {
     : 'No data';
 
   const destinationName = isDestination
-    ? destination.name
+    ? availableDestinations[destination - 1].name
     : '';
 
   const destinationTemplate = isDestination
-    ? createDestinationTemplate(destination)
+    ? createDestinationTemplate(destination, availableDestinations)
     : '';
 
-  const offersTemplate = createOffersTemplate(type, offers);
+  const offersTemplate = createOffersTemplate(type, offers, availableOffers);
 
   const buttonsTemplate = isPointNew
     ? `
@@ -144,7 +136,7 @@ const createPointEditorTemplate = (data, isPointNew) => {
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-            ${createTypeImageTemplate(type)}
+            ${createTypeImageTemplate(type, availableOffers)}
           </fieldset>
         </div>
       </div>
@@ -155,7 +147,7 @@ const createPointEditorTemplate = (data, isPointNew) => {
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1">
         <datalist id="destination-list-1">
-          ${createDestinationListTemplate()}
+          ${createDestinationListTemplate(availableDestinations)}
         </datalist>
       </div>
 
@@ -191,14 +183,23 @@ export default class PointEditFormView extends AbstractStatefulView {
   #isPointNew = false;
   _state = null;
 
-  constructor(point = POINT_TEMPLATE) {
+  #availableDestinations = null;
+  #availableOffers = null;
+
+  constructor(destinations, offers, point = POINT_TEMPLATE) {
     super();
+
+    this.#availableDestinations = destinations;
+    this.#availableOffers = offers;
+
     this.#isPointNew = (point === POINT_TEMPLATE);
     this._state = PointEditFormView.parsePointToState(point);
 
     this.#setInnerHandlers();
     this.#setDateToPicker();
     this.#setDateFromPicker();
+
+
   }
 
   static parsePointToState = (point) => ({...point,
@@ -216,7 +217,7 @@ export default class PointEditFormView extends AbstractStatefulView {
   };
 
   get template() {
-    return createPointEditorTemplate(this._state, this.#isPointNew);
+    return createPointEditorTemplate(this._state, this.#isPointNew, this.#availableDestinations, this.#availableOffers);
   }
 
   #setInnerHandlers = () => {
@@ -316,8 +317,8 @@ export default class PointEditFormView extends AbstractStatefulView {
     evt.preventDefault();
     const newDestinationName = evt.target.value;
     let isNewDestination = false;
-    Object.values(DESTINATIONS).forEach((destination) => {
-      if (newDestinationName === destination.name) {
+    Object.values(this.#availableDestinations).forEach(({id: destination, name}) => {
+      if (newDestinationName === name) {
         isNewDestination = true;
         this.updateElement({
           destination,
