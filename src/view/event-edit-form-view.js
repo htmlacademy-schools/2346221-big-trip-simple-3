@@ -1,4 +1,4 @@
-import { getFullDataTime } from '../utils.js';
+import { getFullDataTime, isFormValid } from '../utils.js';
 import { OFFERS_BY_TYPE, DESTINATION_NAMES, DESTINATIONS } from '../mock/trip-event.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
@@ -10,7 +10,7 @@ const EVENT_TEMPLATE = {
   type: 'flight',
   dateFrom: dayjs().toISOString(),
   dateTo: dayjs().toISOString(),
-  basePrice: 0,
+  basePrice: '',
   offers: new Array(),
   destination: null,
 };
@@ -172,7 +172,7 @@ const createEventEditorTemplate = (data, isEventNew) => {
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" pattern="[0-9]*">
       </div>
 
       ${buttonsTemplate}
@@ -328,7 +328,7 @@ class EventEditFormView extends AbstractStatefulView {
 
     if (!isNewDestination) {
       this._setState({
-        destination: {name: newDestinationName},
+        destination: null,
         isDestination: false,
       });
     }
@@ -351,7 +351,10 @@ class EventEditFormView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(EventEditFormView.parseStateToEvent(this._state));
+    const newState = EventEditFormView.parseStateToEvent(this._state);
+    if (isFormValid(newState)) {
+      this._callback.formSubmit(newState);
+    }
   };
 
   setDeleteButtonClickListener = (callback) => {

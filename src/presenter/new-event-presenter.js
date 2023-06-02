@@ -22,8 +22,8 @@ export default class NewEventPresenter {
     }
 
     this.#newEventForm = new EventEditFormView();
-    this.#newEventForm.setFormSubmitListener(this.#handleFormSubmit); //<--------
-    this.#newEventForm.setDeleteButtonClickListener(this.#handleDeleteClick); //<--------
+    this.#newEventForm.setFormSubmitListener(this.#handleFormSubmit);
+    this.#newEventForm.setDeleteButtonClickListener(this.#handleDeleteClick);
 
     render(this.#newEventForm, this.#eventListContainer, RenderPosition.AFTERBEGIN);
 

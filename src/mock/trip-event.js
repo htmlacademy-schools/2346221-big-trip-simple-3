@@ -1,5 +1,5 @@
 import { getRandomArrayElement, getRandomInt } from '../utils.js';
-import { TRIP_EVENT_TYPES } from '../const.js';
+import { DESTINATION_NAMES, TRIP_EVENT_TYPES } from '../const.js';
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
 
@@ -46,14 +46,6 @@ const generateRandomDates = () => {
     dateTo: dateTo.toISOString(),
   };
 };
-
-const DESTINATION_NAMES = [
-  'Moscow',
-  'SPB',
-  'Voroneg',
-  'Tula',
-  'Orel',
-];
 
 const DESTINATIONS = {};
 DESTINATION_NAMES.forEach((name, index) => {

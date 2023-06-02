@@ -32,4 +32,12 @@ const FILTER_TYPE = {
   FUTURE: 'future',
 };
 
-export { FILTER_TYPE, TRIP_EVENT_TYPES, SORT_TYPE, USER_ACTION, UPDATE_TYPE };
+const DESTINATION_NAMES = [
+  'Moscow',
+  'SPB',
+  'Voroneg',
+  'Tula',
+  'Orel',
+];
+
+export { DESTINATION_NAMES, FILTER_TYPE, TRIP_EVENT_TYPES, SORT_TYPE, USER_ACTION, UPDATE_TYPE };

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { FILTER_TYPE } from './const';
+import { FILTER_TYPE, DESTINATION_NAMES } from './const';
 
 const getRandomInt = (min, max) => {
   if (max < min) {
@@ -57,4 +57,12 @@ const filter = {
   [FILTER_TYPE.FUTURE]: (events) => events.filter((event) => isDateFuture(event.dateTo)),
 };
 
-export { filter, isDatesEqual, sortDays, sortPrices, getRandomInt, getRandomArrayElement, getDate, getTime, getFullDataTime };
+const isFormValid = (state) => {
+  if (state.destination && state.basePrice) {
+    const isDestination = DESTINATION_NAMES.includes(state.destination.name);
+    return isDestination && /^\d+$/.test(state.basePrice);
+  }
+  return false;
+};
+
+export { isFormValid, filter, isDatesEqual, sortDays, sortPrices, getRandomInt, getRandomArrayElement, getDate, getTime, getFullDataTime };
