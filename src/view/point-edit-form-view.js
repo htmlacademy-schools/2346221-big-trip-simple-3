@@ -1,12 +1,12 @@
 import { getFullDataTime, isFormValid } from '../utils.js';
-import { OFFERS_BY_TYPE, DESTINATION_NAMES, DESTINATIONS } from '../mock/trip-event.js';
+import { OFFERS_BY_TYPE, DESTINATION_NAMES, DESTINATIONS } from '../mock/trip-point.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import dayjs from 'dayjs';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-const EVENT_TEMPLATE = {
+const POINT_TEMPLATE = {
   type: 'flight',
   dateFrom: dayjs().toISOString(),
   dateTo: dayjs().toISOString(),
@@ -98,7 +98,7 @@ const createDestinationListTemplate = () => {
   return template;
 };
 
-const createEventEditorTemplate = (data, isEventNew) => {
+const createPointEditorTemplate = (data, isPointNew) => {
   const {dateFrom, dateTo, offers, type, destination, basePrice, isDestination} = data;
 
   const tripDateFrom = dateFrom !== null
@@ -119,7 +119,7 @@ const createEventEditorTemplate = (data, isEventNew) => {
 
   const offersTemplate = createOffersTemplate(type, offers);
 
-  const buttonsTemplate = isEventNew
+  const buttonsTemplate = isPointNew
     ? `
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
       <button class="event__reset-btn" type="reset">Cancel</button>`
@@ -186,37 +186,37 @@ const createEventEditorTemplate = (data, isEventNew) => {
 `;
 };
 
-class EventEditFormView extends AbstractStatefulView {
+export default class PointEditFormView extends AbstractStatefulView {
   #datepicker = {};
-  #isEventNew = false;
+  #isPointNew = false;
   _state = null;
 
-  constructor(event = EVENT_TEMPLATE) {
+  constructor(point = POINT_TEMPLATE) {
     super();
-    this.#isEventNew = (event === EVENT_TEMPLATE);
-    this._state = EventEditFormView.parseEventToState(event);
+    this.#isPointNew = (point === POINT_TEMPLATE);
+    this._state = PointEditFormView.parsePointToState(point);
 
     this.#setInnerHandlers();
     this.#setDateToPicker();
     this.#setDateFromPicker();
   }
 
-  static parseEventToState = (event) => ({...event,
-    isDestination: event.destination !== null
+  static parsePointToState = (point) => ({...point,
+    isDestination: point.destination !== null
   });
 
-  static parseStateToEvent = (state) => {
-    const event = {...state};
-    if (!event.isDestination) {
-      event.destination = null;
+  static parseStateToPoint = (state) => {
+    const point = {...state};
+    if (!point.isDestination) {
+      point.destination = null;
     }
-    delete event.isDestination;
+    delete point.isDestination;
 
-    return event;
+    return point;
   };
 
   get template() {
-    return createEventEditorTemplate(this._state, this.#isEventNew);
+    return createPointEditorTemplate(this._state, this.#isPointNew);
   }
 
   #setInnerHandlers = () => {
@@ -290,7 +290,7 @@ class EventEditFormView extends AbstractStatefulView {
 
   #changePrice = (evt) => {
     evt.preventDefault();
-    const newPrice = event.target.value;
+    const newPrice = evt.target.value;
     this._setState({
       basePrice: newPrice,
     });
@@ -314,7 +314,7 @@ class EventEditFormView extends AbstractStatefulView {
 
   #changeDestination = (evt) => {
     evt.preventDefault();
-    const newDestinationName = event.target.value;
+    const newDestinationName = evt.target.value;
     let isNewDestination = false;
     Object.values(DESTINATIONS).forEach((destination) => {
       if (newDestinationName === destination.name) {
@@ -351,7 +351,7 @@ class EventEditFormView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    const newState = EventEditFormView.parseStateToEvent(this._state);
+    const newState = PointEditFormView.parseStateToPoint(this._state);
     if (isFormValid(newState)) {
       this._callback.formSubmit(newState);
     }
@@ -364,7 +364,7 @@ class EventEditFormView extends AbstractStatefulView {
 
   #deleteButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.delete(EventEditFormView.parseStateToEvent(this._state));
+    this._callback.delete(PointEditFormView.parseStateToPoint(this._state));
   };
 
   setEscKeydownListener = (callback) => {
@@ -383,9 +383,9 @@ class EventEditFormView extends AbstractStatefulView {
     document.removeEventListener('keydown', this.#escKeydownHandler);
   };
 
-  reset = (event) => {
+  reset = (point) => {
     this.updateElement(
-      EventEditFormView.parseEventToState(event),
+      PointEditFormView.parsePointToState(point),
     );
   };
 
@@ -402,4 +402,3 @@ class EventEditFormView extends AbstractStatefulView {
   };
 }
 
-export default EventEditFormView;

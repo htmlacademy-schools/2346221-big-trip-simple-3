@@ -1,44 +1,44 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import {nanoid} from 'nanoid';
 import {USER_ACTION, UPDATE_TYPE} from '../const.js';
-import EventEditFormView from '../view/event-edit-form-view.js';
+import PointEditFormView from '../view/point-edit-form-view.js';
 
-export default class NewEventPresenter {
-  #eventListContainer = null;
+export default class NewPointPresenter {
+  #pointListContainer = null;
   #changeData = null;
-  #newEventForm = null;
+  #newPointForm = null;
   #destroyCallback = null;
 
-  constructor(eventListContainer, changeData) {
-    this.#eventListContainer = eventListContainer;
+  constructor(pointListContainer, changeData) {
+    this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
   }
 
   init = (callback) => {
     this.#destroyCallback = callback;
 
-    if (this.#newEventForm !== null) {
+    if (this.#newPointForm !== null) {
       return;
     }
 
-    this.#newEventForm = new EventEditFormView();
-    this.#newEventForm.setFormSubmitListener(this.#handleFormSubmit);
-    this.#newEventForm.setDeleteButtonClickListener(this.#handleDeleteClick);
+    this.#newPointForm = new PointEditFormView();
+    this.#newPointForm.setFormSubmitListener(this.#handleFormSubmit);
+    this.#newPointForm.setDeleteButtonClickListener(this.#handleDeleteClick);
 
-    render(this.#newEventForm, this.#eventListContainer, RenderPosition.AFTERBEGIN);
+    render(this.#newPointForm, this.#pointListContainer, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
   destroy = () => {
-    if (this.#newEventForm === null) {
+    if (this.#newPointForm === null) {
       return;
     }
 
     this.#destroyCallback?.();
 
-    remove(this.#newEventForm);
-    this.#newEventForm = null;
+    remove(this.#newPointForm);
+    this.#newPointForm = null;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
@@ -47,8 +47,6 @@ export default class NewEventPresenter {
     this.#changeData(
       USER_ACTION.ADD_TASK,
       UPDATE_TYPE.MINOR,
-      // Пока у нас нет сервера, который бы после сохранения
-      // выдывал честный id задачи, нам нужно позаботиться об этом самим
       {id: nanoid(), ...task},
     );
     this.destroy();

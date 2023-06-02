@@ -1,9 +1,9 @@
 import { getRandomArrayElement, getRandomInt } from '../utils.js';
-import { DESTINATION_NAMES, TRIP_EVENT_TYPES } from '../const.js';
+import { DESTINATION_NAMES, TRIP_POINT_TYPES } from '../const.js';
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
 
-const generateRandomEventType = () => getRandomArrayElement(TRIP_EVENT_TYPES);
+const generateRandomPointType = () => getRandomArrayElement(TRIP_POINT_TYPES);
 
 const generateDescription = () => {
   const descriptions = [
@@ -72,7 +72,7 @@ const generateOffers = () => {
 };
 
 const OFFERS_BY_TYPE = {};
-TRIP_EVENT_TYPES.forEach((name) => {
+TRIP_POINT_TYPES.forEach((name) => {
   OFFERS_BY_TYPE[`${name}`] = {
     'type': name,
     'offers': generateOffers(),
@@ -92,12 +92,12 @@ const generateOffersIds = (type) => {
 
 const getRandomDestination = () => DESTINATIONS[`${getRandomInt(1, DESTINATION_NAMES.length)}`];
 
-const generateTripEvents = (eventsNumber) => {
-  const events = new Array(eventsNumber);
-  for (let i = 0; i < eventsNumber; ++i) {
+const generateTripPoints = (pointsCount) => {
+  const points = new Array(pointsCount);
+  for (let i = 0; i < pointsCount; ++i) {
     const { dateFrom, dateTo } = generateRandomDates();
-    const type = generateRandomEventType();
-    events[i] = {
+    const type = generateRandomPointType();
+    points[i] = {
       id: nanoid(),
       type,
       dateFrom,
@@ -107,7 +107,7 @@ const generateTripEvents = (eventsNumber) => {
       destination: getRandomDestination(),
     };
   }
-  return events;
+  return points;
 };
 
-export { generateTripEvents, OFFERS_BY_TYPE, DESTINATION_NAMES, DESTINATIONS };
+export { generateTripPoints, OFFERS_BY_TYPE, DESTINATION_NAMES, DESTINATIONS };

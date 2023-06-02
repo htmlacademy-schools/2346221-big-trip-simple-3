@@ -1,5 +1,5 @@
 import { getDate, getTime } from '../utils.js';
-import { OFFERS_BY_TYPE } from '../mock/trip-event.js';
+import { OFFERS_BY_TYPE } from '../mock/trip-point.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const createOffersTemplate = (type, offers) => {
@@ -19,7 +19,7 @@ const createOffersTemplate = (type, offers) => {
   return template;
 };
 
-const createTripEventTemplate = (tripInfo) => {
+const createTripPointTemplate = (tripInfo) => {
   const {dateFrom, dateTo, offers, type, destination, basePrice} = tripInfo;
 
   const tripDate = dateFrom !== null
@@ -67,7 +67,7 @@ const createTripEventTemplate = (tripInfo) => {
   `;
 };
 
-class TripEventView extends AbstractView {
+export default class TripPointView extends AbstractView {
   #info = null;
 
   constructor(info) {
@@ -76,7 +76,7 @@ class TripEventView extends AbstractView {
   }
 
   get template() {
-    return createTripEventTemplate(this.#info);
+    return createTripPointTemplate(this.#info);
   }
 
   setEditClickListener = (callback) => {
@@ -90,4 +90,3 @@ class TripEventView extends AbstractView {
   };
 }
 
-export default TripEventView;
