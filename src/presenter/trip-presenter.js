@@ -3,6 +3,7 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import EventListSortingView from '../view/event-list-sorting-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import TripEventPresenter from './trip-event-presenter.js';
+import NewEventPresenter from './new-event-presenter.js';
 import { filter, sortDays, sortPrices } from '../utils.js';
 import { SORT_TYPE, UPDATE_TYPE, USER_ACTION, FILTER_TYPE } from '../const.js';
 
@@ -12,6 +13,7 @@ class TripPresenter {
   #eventSorter = null;
   #tripEventPresenter = new Map();
   #container = null;
+  #newEventPresenter = null;
   #tripEventsModel = null;
   #filterModel = null;
 
@@ -22,6 +24,8 @@ class TripPresenter {
     this.#container = container;
     this.#tripEventsModel = tripEventsModel;
     this.#filterModel = filterModel;
+
+    this.#newEventPresenter = new NewEventPresenter(this.#tripEventsList.element, this.#handleViewAction);
 
     this.#tripEventsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -46,6 +50,12 @@ class TripPresenter {
     return filteredTasks;
   }
 
+  createTask = (callback) => {
+    this.#sortType = SORT_TYPE.DAY;
+    this.#filterModel.setFilter(UPDATE_TYPE.MAJOR, FILTER_TYPE.EVERYTHING);
+    this.#newEventPresenter.init(callback);
+  };
+
   #renderEmptyList = () => {
     this.#emptyListComponent = new EmptyListView(this.#filterType);
     render(this.#emptyListComponent, this.#container);
@@ -62,6 +72,7 @@ class TripPresenter {
   };
 
   #clearEventList = ({resetSortType = false} = {}) => {
+    this.#newEventPresenter.destroy();
     this.#tripEventPresenter.forEach((presenter) => presenter.destroy());
     this.#tripEventPresenter.clear();
 
@@ -106,6 +117,7 @@ class TripPresenter {
   };
 
   #handleModeChange = () => {
+    this.#newEventPresenter.destroy();
     this.#tripEventPresenter.forEach((presenter) => presenter.resetView());
   };
 

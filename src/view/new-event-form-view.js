@@ -1,14 +1,38 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import { getFullDataTime } from '../utils.js';
 import { OFFERS_BY_TYPE, DESTINATION_NAMES } from '../mock/trip-event.js';
 import AbstractView from '../framework/view/abstract-view.js';
+import dayjs from 'dayjs';
 
 const INFO_TEMPLATE = {
-  id: 1,
   type: 'flight',
-  dateFrom: '2023-01-10T22:55:56.845Z',
-  dateTo: '2023-01-10T22:55:56.845Z',
+  dateFrom: dayjs(),
+  dateTo: dayjs(),
   basePrice: 0,
-  offers: null,
+  offers: new Array(),
   destination: null,
 };
 
@@ -20,7 +44,7 @@ const createDestinationTemplate = (destination) => {
     picturesSection += `<img class="event__photo" src="${src}" alt="${photoDescription}">`;
   });
 
-  return `
+  return (destination) ? `
     <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">${description}</p>
@@ -31,22 +55,14 @@ const createDestinationTemplate = (destination) => {
           </div>
         </div>
       </section>
-  `;
-};
-
-const createDestinationListTemplate = () => {
-  let template = '';
-  DESTINATION_NAMES.forEach((name) => {
-    template += `<option value="${name}"></option>`;
-  });
-  return template;
+  ` : '';
 };
 
 const createOffersTemplate = (type, offers) => {
   let template = '';
   const allOffers = OFFERS_BY_TYPE[`${type}`].offers;
   Object.values(allOffers).forEach(({id, title, price}) => {
-    if (offers.includes(id)) {
+    if (offers.includes(id) || offers.includes(String(id))) {
       template += `
             <div class="event__offer-selector">
               <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="${title}" checked>
@@ -80,6 +96,14 @@ const createOffersTemplate = (type, offers) => {
     ` : '';
 };
 
+const createDestinationListTemplate = () => {
+  let template = '';
+  DESTINATION_NAMES.forEach((name) => {
+    template += `<option value="${name}"></option>`;
+  });
+  return template;
+};
+
 const createTypeImageTemplate = (currentType) => {
   let template = '';
   const allTypes = Object.keys(OFFERS_BY_TYPE);
@@ -95,20 +119,26 @@ const createTypeImageTemplate = (currentType) => {
   return template;
 };
 
-const createNewEventFormTemplate = (tripInfo) => {
-  const {dateFrom, dateTo, offers, type, destination, basePrice} = tripInfo;
+const createNewEventFormTemplate = (data) => {
+  const {dateFrom, dateTo, offers, type, destination, basePrice, isDestination} = data;
 
   const tripDateFrom = dateFrom !== null
     ? getFullDataTime(dateFrom)
-    : 'No data';
+    : getFullDataTime(dayjs());
 
   const tripDateTo = dateTo !== null
     ? getFullDataTime(dateTo)
-    : 'No data';
+    : getFullDataTime(dayjs());
 
   const destinationName = destination !== null
     ? destination.name
-    : 'No destination';
+    : '';
+
+  const destinationTemplate = isDestination
+    ? createDestinationTemplate(destination)
+    : '';
+
+  const offersTemplate = createOffersTemplate(type, offers);
 
   return `
 <li class="trip-events__item">
@@ -150,17 +180,17 @@ const createNewEventFormTemplate = (tripInfo) => {
       <div class="event__field-group  event__field-group--price">
         <label class="event__label" for="event-price-1">
           <span class="visually-hidden">Price</span>
-          &euro; ${basePrice}
+          &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
+        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
       <button class="event__reset-btn" type="reset">Cancel</button>
     </header>
     <section class="event__details">
-      ${createOffersTemplate(type, offers)}
-      ${createDestinationTemplate(destination)}
+      ${offersTemplate}
+      ${destinationTemplate}
     </section>
   </form>
 </li>

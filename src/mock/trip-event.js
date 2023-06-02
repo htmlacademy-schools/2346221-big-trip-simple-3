@@ -33,10 +33,8 @@ const generatePhotos = () => {
   return pictures;
 };
 
-const generateRandomDates = (date = null) => {
-  if (!date) {
-    date = dayjs();
-  }
+const generateRandomDates = () => {
+  const date = dayjs();
 
   const minutesOffset = getRandomInt(-12 * 60, 12 * 60);
   const minutesDuration = getRandomInt(10, 60);
@@ -44,8 +42,8 @@ const generateRandomDates = (date = null) => {
   const dateFrom = date.add(minutesOffset, 'minute');
   const dateTo = dateFrom.add(minutesDuration, 'minute');
   return {
-    dateFrom: dateFrom,
-    dateTo: dateTo,
+    dateFrom: dateFrom.toISOString(),
+    dateTo: dateTo.toISOString(),
   };
 };
 
@@ -104,9 +102,8 @@ const getRandomDestination = () => DESTINATIONS[`${getRandomInt(1, DESTINATION_N
 
 const generateTripEvents = (eventsNumber) => {
   const events = new Array(eventsNumber);
-  const currentDate = dayjs();
   for (let i = 0; i < eventsNumber; ++i) {
-    const { dateFrom, dateTo } = generateRandomDates(currentDate);
+    const { dateFrom, dateTo } = generateRandomDates();
     const type = generateRandomEventType();
     events[i] = {
       id: nanoid(),
