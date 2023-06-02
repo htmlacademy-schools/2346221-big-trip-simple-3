@@ -4,12 +4,15 @@ import PointListSortingView from '../view/point-list-sorting-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import TripPointPresenter from './trip-point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
+import LoadingView from '../view/loading-view.js';
 import { filter, sortDays, sortPrices } from '../utils.js';
 import { SORT_TYPE, UPDATE_TYPE, USER_ACTION, FILTER_TYPE } from '../const.js';
 
-class TripPresenter {
+export default class TripPresenter {
   #tripPointsList = new TripPointsListView();
   #emptyListComponent = null;
+  #loadingComponent = new LoadingView();
+  #isLoading = true;
   #pointSorter = null;
   #tripPointPresenter = new Map();
   #container = null;
@@ -71,12 +74,18 @@ class TripPresenter {
     this.points.forEach((task) => this.#renderPoint(task));
   };
 
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#tripPointsList.element, RenderPosition.AFTERBEGIN);
+  };
+
   #clearPointList = ({resetSortType = false} = {}) => {
     this.#newPointPresenter.destroy();
     this.#tripPointPresenter.forEach((presenter) => presenter.destroy());
     this.#tripPointPresenter.clear();
 
     remove(this.#pointSorter);
+    remove(this.#loadingComponent);
+
     if (this.#emptyListComponent) {
       remove(this.#emptyListComponent);
     }
@@ -113,6 +122,11 @@ class TripPresenter {
         this.#clearPointList({resetSortType: true});
         this.#renderBoard();
         break;
+      case UPDATE_TYPE.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
     }
   };
 
@@ -139,6 +153,13 @@ class TripPresenter {
   };
 
   #renderBoard = () => {
+    render(this.#tripPointsList, this.#container);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const points = this.points;
     const pointCount = points.length;
     if (pointCount === 0) {
@@ -147,9 +168,6 @@ class TripPresenter {
     }
     this.#renderSort();
 
-    render(this.#tripPointsList, this.#container);
     this.#renderPoints();
   };
 }
-
-export default TripPresenter;
