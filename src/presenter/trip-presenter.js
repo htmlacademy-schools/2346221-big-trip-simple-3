@@ -5,9 +5,14 @@ import EmptyListView from '../view/empty-list-view.js';
 import TripPointPresenter from './trip-point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import LoadingView from '../view/loading-view.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { filter, sortDays, sortPrices } from '../utils.js';
 import { SORT_TYPE, UPDATE_TYPE, USER_ACTION, FILTER_TYPE } from '../const.js';
 
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 export default class TripPresenter {
   #tripPointsList = new TripPointsListView();
   #emptyListComponent = null;
@@ -19,6 +24,10 @@ export default class TripPresenter {
   #newPointPresenter = null;
   #tripPointsModel = null;
   #filterModel = null;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   #filterType = FILTER_TYPE.EVERYTHING;
   #sortType = SORT_TYPE.DAY;
@@ -98,6 +107,7 @@ export default class TripPresenter {
   };
 
   #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case USER_ACTION.UPDATE_TASK:
         this.#tripPointPresenter.get(update.id).setSaving();
@@ -124,6 +134,7 @@ export default class TripPresenter {
         }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
