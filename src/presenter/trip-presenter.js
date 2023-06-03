@@ -104,7 +104,7 @@ export default class TripPresenter {
         this.#tripPointsModel.updatePoint(updateType, update);
         break;
       case USER_ACTION.ADD_TASK:
-        this.#newPointPresenter.get(update.id).setSaving();
+        this.#newPointPresenter.setSaving();
         this.#tripPointsModel.addPoint(updateType, update);
         break;
       case USER_ACTION.DELETE_TASK:

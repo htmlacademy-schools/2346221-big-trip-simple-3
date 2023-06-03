@@ -49,7 +49,7 @@ export default class NewPointPresenter {
   };
 
   setSaving = () => {
-    this.#pointListContainer.updateElement({
+    this.#newPointForm.updateElement({
       isSaving: true,
     });
   };
