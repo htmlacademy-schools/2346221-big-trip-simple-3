@@ -108,7 +108,6 @@ export default class TripPointPresenter {
   };
 
   #replacePointToForm = () => {
-    // нажате на Esc для закрытия формы
     this.#pointEditorComponent.setEscKeydownListener(this.#replaceFormToPoint);
     this.#changeMode();
     this.#mode = Mode.EDITING;
