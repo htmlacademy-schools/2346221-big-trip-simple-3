@@ -121,7 +121,7 @@ export default class TripPointPresenter {
       this.#point.basePrice !== update.basePrice;
 
     this.#changeData(
-      UserAction.UPDATE_TASK,
+      UserAction.UPDATE_POINT,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
@@ -142,7 +142,7 @@ export default class TripPointPresenter {
   #handleDeleteClick = (point) => {
     this.#pointEditorComponent.removeEscKeydownListener();
     this.#changeData(
-      UserAction.DELETE_TASK,
+      UserAction.DELETE_POINT,
       UpdateType.MINOR,
       point,
     );

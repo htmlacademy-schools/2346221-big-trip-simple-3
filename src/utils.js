@@ -23,13 +23,13 @@ const getWeightForNullDate = (dateA, dateB) => {
 
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'm');
 
-const sortDays = (taskA, taskB) => {
-  const weight = getWeightForNullDate(taskA.dateFrom, taskB.dateFrom);
+const sortDays = (pointA, pointB) => {
+  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
 
-  return weight ?? dayjs(taskA.dateFrom).diff(dayjs(taskB.dateFrom));
+  return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 };
 
-const sortPrices = (taskA, taskB) => taskB.basePrice - taskA.basePrice;
+const sortPrices = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
 
 const isDateFuture = (date) => {
   const currentDate = dayjs();

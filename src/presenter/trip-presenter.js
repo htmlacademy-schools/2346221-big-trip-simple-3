@@ -109,7 +109,7 @@ export default class TripPresenter {
   #handleViewAction = async (actionType, updateType, update) => {
     this.#uiBlocker.block();
     switch (actionType) {
-      case UserAction.UPDATE_TASK:
+      case UserAction.UPDATE_POINT:
         this.#tripPointPresenter.get(update.id).setSaving();
         try {
           this.#tripPointsModel.updatePoint(updateType, update);
@@ -117,7 +117,7 @@ export default class TripPresenter {
           this.#tripPointPresenter.get(update.id).setAborting();
         }
         break;
-      case UserAction.ADD_TASK:
+      case UserAction.ADD_POINT:
         this.#newPointPresenter.setSaving();
         try {
           this.#tripPointsModel.addPoint(updateType, update);
@@ -125,7 +125,7 @@ export default class TripPresenter {
           this.#newPointPresenter.setAborting();
         }
         break;
-      case UserAction.DELETE_TASK:
+      case UserAction.DELETE_POINT:
         this.#tripPointPresenter.get(update.id).setDeleting();
         try {
           this.#tripPointsModel.deletePoint(updateType, update);
