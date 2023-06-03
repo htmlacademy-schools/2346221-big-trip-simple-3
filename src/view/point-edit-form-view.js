@@ -41,7 +41,7 @@ const createOffersTemplate = (type, offers, availableOffers) => {
   allOffers.forEach(({type: pointType, offers: typeOffers}) => {
     if (type === pointType) {
       typeOffers.forEach(({id, title, price}) => {
-        const isChecked = (offers.includes(id) || offers.includes(String(id)))
+        const isChecked = (offers.includes(id))
           ? 'checked'
           : '';
         template += `
@@ -291,7 +291,7 @@ export default class PointEditFormView extends AbstractStatefulView {
 
   #changePrice = (evt) => {
     evt.preventDefault();
-    const newPrice = evt.target.value;
+    const newPrice = Number(evt.target.value);
     this._setState({
       basePrice: newPrice,
     });
@@ -305,7 +305,7 @@ export default class PointEditFormView extends AbstractStatefulView {
     const checkedIds = new Array();
 
     checkboxes.forEach((checkbox) => {
-      checkedIds.push(checkbox.id);
+      checkedIds.push(Number(checkbox.id));
     });
 
     this._setState({
@@ -353,7 +353,7 @@ export default class PointEditFormView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     const newState = PointEditFormView.parseStateToPoint(this._state);
-    if (isFormValid(newState)) {
+    if (isFormValid(newState, this.#availableDestinations)) {
       this._callback.formSubmit(newState);
     }
   };

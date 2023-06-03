@@ -43,13 +43,9 @@ const filter = {
 };
 
 const isFormValid = (state, availableDestinations) => {
-  Object.values(availableDestinations).forEach(({id}) => {
-    if (state.destination === id && state.basePrice) {
-      return /^\d+$/.test(state.basePrice);
-    }
-  });
+  const allIds = Object.keys(availableDestinations);
 
-  return false;
+  return (allIds.includes(`${state.destination - 1}`) && /^\d+$/.test(state.basePrice));
 };
 
 export { isFormValid, filter, isDatesEqual, sortDays, sortPrices, getDate, getTime, getFullDataTime };
