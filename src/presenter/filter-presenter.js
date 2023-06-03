@@ -21,7 +21,7 @@ export default class FilterPresenter {
   init = () => {
     const prevFilterComponent = this.#filterComponent;
 
-    this.#filterComponent = new FilterView(this.#filterModel.filter);
+    this.#filterComponent = new FilterView(this.#filterModel.filter, this.#pointsModel.points);
     this.#filterComponent.setFilterChangeListener(this.#handleFilterChange);
 
     if (prevFilterComponent === null) {

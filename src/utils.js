@@ -24,9 +24,9 @@ const getWeightForNullDate = (dateA, dateB) => {
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'm');
 
 const sortDays = (taskA, taskB) => {
-  const weight = getWeightForNullDate(taskA.dateTo, taskB.dateTo);
+  const weight = getWeightForNullDate(taskA.dateFrom, taskB.dateFrom);
 
-  return weight ?? dayjs(taskA.dateTo).diff(dayjs(taskB.dateTo));
+  return weight ?? dayjs(taskA.dateFrom).diff(dayjs(taskB.dateFrom));
 };
 
 const sortPrices = (taskA, taskB) => taskB.basePrice - taskA.basePrice;
@@ -39,7 +39,7 @@ const isDateFuture = (date) => {
 
 const filter = {
   [FILTER_TYPE.EVERYTHING]: (points) => points,
-  [FILTER_TYPE.FUTURE]: (points) => points.filter((point) => isDateFuture(point.dateTo)),
+  [FILTER_TYPE.FUTURE]: (points) => points.filter((point) => isDateFuture(point.dateFrom)),
 };
 
 const isFormValid = (state, availableDestinations) => {
