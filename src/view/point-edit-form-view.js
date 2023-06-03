@@ -16,10 +16,9 @@ const POINT_TEMPLATE = {
 const createDestinationTemplate = (destination, availableDestinations) => {
   const {description, pictures} = availableDestinations[destination - 1];
 
-  let picturesSection = '';
-  pictures.forEach(({src, description: photoDescription}) => {
-    picturesSection += `<img class="event__photo" src="${src}" alt="${photoDescription}">`;
-  });
+  const picturesSection = pictures
+    .map(({src, description: photoDescription}) => `<img class="event__photo" src="${src}" alt="${photoDescription}">`)
+    .join('');
 
   return (destination) ? `
     <section class="event__section  event__section--destination">
@@ -67,20 +66,16 @@ const createOffersTemplate = (type, offers, availableOffers) => {
     ` : '';
 };
 
-const createTypeImageTemplate = (currentType, availableOffers) => {
-  let template = '';
-  Object.values(availableOffers).forEach(({type}) => {
-    const checkedValue = (type === currentType) ? 'checked' : '';
-    template += `
-    <div class="event__type-item">
-      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${checkedValue}>
-      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
-    </div>
+const createTypeImageTemplate = (currentType, availableOffers) => Object.values(availableOffers)
+  .map(({type}) => {
+    const checkedValue = type === currentType ? 'checked' : '';
+    return `
+      <div class="event__type-item">
+        <input id="event-type-${type}-1" class="event__type-input visually-hidden" type="radio" name="event-type" value="${type}" ${checkedValue}>
+        <label class="event__type-label event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+      </div>
     `;
-  });
-
-  return template;
-};
+  }).join('');
 
 const createDestinationListTemplate = (availableDestinations) => {
   let template = '';
@@ -322,23 +317,20 @@ export default class PointEditFormView extends AbstractStatefulView {
   #changeDestination = (evt) => {
     evt.preventDefault();
     const newDestinationName = evt.target.value;
-    let isNewDestination = false;
-    Object.values(this.#availableDestinations).forEach(({id: destination, name}) => {
-      if (newDestinationName === name) {
-        isNewDestination = true;
-        this.updateElement({
-          destination,
-          isDestination: true,
-        });
-      }
-    });
+    const destination = Object.values(this.#availableDestinations).find(({name}) => newDestinationName === name);
 
-    if (!isNewDestination) {
+    if (destination) {
+      this.updateElement({
+        destination: destination.id,
+        isDestination: true,
+      });
+    } else {
       this._setState({
         destination: null,
         isDestination: false,
       });
     }
+
   };
 
   setCloseButtonClickListener = (callback) => {

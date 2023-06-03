@@ -1,25 +1,25 @@
-const SORT_TYPE = {
+const SortType = {
   DAY: 'day',
   PRICE: 'price',
 };
 
-const USER_ACTION = {
+const UserAction = {
   UPDATE_TASK: 'UPDATE_TASK',
   ADD_TASK: 'ADD_TASK',
   DELETE_TASK: 'DELETE_TASK',
 };
 
-const UPDATE_TYPE = {
+const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
 };
 
-const FILTER_TYPE = {
+const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
 };
 
 
-export { FILTER_TYPE, SORT_TYPE, USER_ACTION, UPDATE_TYPE };
+export { FilterType, SortType, UserAction, UpdateType };

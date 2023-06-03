@@ -1,5 +1,5 @@
+import { FilterType } from './const';
 import dayjs from 'dayjs';
-import { FILTER_TYPE } from './const';
 
 const getDate = (date) => dayjs(date).format('MMM D');
 const getTime = (date) => dayjs(date).format('HH-mm');
@@ -38,8 +38,8 @@ const isDateFuture = (date) => {
 };
 
 const filter = {
-  [FILTER_TYPE.EVERYTHING]: (points) => points,
-  [FILTER_TYPE.FUTURE]: (points) => points.filter((point) => isDateFuture(point.dateFrom)),
+  [FilterType.EVERYTHING]: (points) => points,
+  [FilterType.FUTURE]: (points) => points.filter((point) => isDateFuture(point.dateFrom)),
 };
 
 const isFormValid = (state, availableDestinations) => {
