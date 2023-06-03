@@ -386,6 +386,7 @@ export default class PointEditFormView extends AbstractStatefulView {
 
   removeElement = () => {
     super.removeElement();
+    this.removeEscKeydownListener();
 
     if (this.#datepicker.dateTo) {
       this.#datepicker.dateTo.destroy();

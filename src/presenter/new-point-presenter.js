@@ -29,23 +29,20 @@ export default class NewPointPresenter {
     this.#newPointForm = new PointEditFormView(this.#availableDestinations, this.#availableOffers);
     this.#newPointForm.setFormSubmitListener(this.#handleFormSubmit);
     this.#newPointForm.setDeleteButtonClickListener(this.#handleDeleteClick);
+    this.#newPointForm.setEscKeydownListener(this.#handleDeleteClick);
 
     render(this.#newPointForm, this.#pointListContainer, RenderPosition.AFTERBEGIN);
-
-    document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
   destroy = () => {
     if (this.#newPointForm === null) {
       return;
     }
-
+    this.#newPointForm.removeEscKeydownListener();
     this.#destroyCallback?.();
 
     remove(this.#newPointForm);
     this.#newPointForm = null;
-
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   setSaving = () => {
@@ -75,12 +72,5 @@ export default class NewPointPresenter {
 
   #handleDeleteClick = () => {
     this.destroy();
-  };
-
-  #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this.destroy();
-    }
   };
 }
