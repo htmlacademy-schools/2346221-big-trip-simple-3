@@ -111,7 +111,7 @@ const createPointEditorTemplate = (data, isPointNew, availableDestinations, avai
 
   const offersTemplate = createOffersTemplate(type, offers, availableOffers);
 
-  const isNotActive = (isDeleting || isSaving);
+  const isDisabled = (isDeleting || isSaving);
 
   const buttonsTemplate = isPointNew
     ? `
@@ -125,7 +125,7 @@ const createPointEditorTemplate = (data, isPointNew, availableDestinations, avai
       </button>`;
 
   return `
-<li class="trip-events__item" ${isNotActive ? 'style="pointer-events: none;"' : ''}>
+<li class="trip-events__item" ${isDisabled ? 'style="pointer-events: none;"' : ''}>
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">

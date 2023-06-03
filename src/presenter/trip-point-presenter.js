@@ -60,12 +60,29 @@ export default class TripPointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#pointEditorComponent, prevPointEditorComponent);
+      replace(this.#pointComponent, prevPointComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevPointComponent);
     remove(prevPointEditorComponent);
   }
+
+  setSaving = () => {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditorComponent.updateElement({
+        isSaving: true,
+      });
+    }
+  };
+
+  setDeleting = () => {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditorComponent.updateElement({
+        isDeleting: true,
+      });
+    }
+  };
 
   #replaceFormToPoint = () => {
     this.#pointEditorComponent.reset(this.#point);
@@ -93,8 +110,6 @@ export default class TripPointPresenter {
       isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH,
       update,
     );
-
-    this.#replaceFormToPoint();
   };
 
   destroy = () => {

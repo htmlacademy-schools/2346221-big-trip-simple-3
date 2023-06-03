@@ -48,13 +48,18 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
+  setSaving = () => {
+    this.#pointListContainer.updateElement({
+      isSaving: true,
+    });
+  };
+
   #handleFormSubmit = (point) => {
     this.#changeData(
       USER_ACTION.ADD_TASK,
       UPDATE_TYPE.MINOR,
       point,
     );
-    this.destroy();
   };
 
   #handleDeleteClick = () => {
