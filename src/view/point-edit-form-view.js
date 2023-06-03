@@ -91,7 +91,7 @@ const createDestinationListTemplate = (availableDestinations) => {
 };
 
 const createPointEditorTemplate = (data, isPointNew, availableDestinations, availableOffers) => {
-  const {dateFrom, dateTo, offers, type, destination, basePrice, isDestination} = data;
+  const {dateFrom, dateTo, offers, type, destination, basePrice, isDestination, isDeleting, isSaving} = data;
 
   const tripDateFrom = dateFrom !== null
     ? getFullDataTime(dateFrom)
@@ -111,19 +111,21 @@ const createPointEditorTemplate = (data, isPointNew, availableDestinations, avai
 
   const offersTemplate = createOffersTemplate(type, offers, availableOffers);
 
+  const isDisabled = (isDeleting || isSaving);
+
   const buttonsTemplate = isPointNew
     ? `
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Cancel</button>`
+    <button class="event__save-btn  btn  btn--blue" type="submit" ${isSaving ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+      <button class="event__reset-btn" type="reset" ${isDeleting ? 'disabled' : ''}>${isDeleting ? 'Cancelling...' : 'Cancel'}</button>`
     : `
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Delete</button>
+    <button class="event__save-btn  btn  btn--blue" type="submit" ${isSaving ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+      <button class="event__reset-btn" type="reset" ${isDeleting ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>`;
 
   return `
-<li class="trip-events__item">
+<li class="trip-events__item" ${isDisabled ? 'style="pointer-events: none;"' : ''}>
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
@@ -203,7 +205,9 @@ export default class PointEditFormView extends AbstractStatefulView {
   }
 
   static parsePointToState = (point) => ({...point,
-    isDestination: point.destination !== null
+    isDestination: point.destination !== null,
+    isSaving: false,
+    isDeleting: false,
   });
 
   static parseStateToPoint = (state) => {
@@ -212,6 +216,8 @@ export default class PointEditFormView extends AbstractStatefulView {
       point.destination = null;
     }
     delete point.isDestination;
+    delete point.isSaving;
+    delete point.isDeleting;
 
     return point;
   };

@@ -60,12 +60,45 @@ export default class TripPointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#pointEditorComponent, prevPointEditorComponent);
+      replace(this.#pointComponent, prevPointEditorComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevPointComponent);
     remove(prevPointEditorComponent);
   }
+
+  setSaving = () => {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditorComponent.updateElement({
+        isSaving: true,
+      });
+    }
+  };
+
+  setDeleting = () => {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditorComponent.updateElement({
+        isDeleting: true,
+      });
+    }
+  };
+
+  setAborting = () => {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#pointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#pointEditorComponent.updateElement({
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditorComponent.shake(resetFormState);
+  };
 
   #replaceFormToPoint = () => {
     this.#pointEditorComponent.reset(this.#point);
@@ -75,7 +108,6 @@ export default class TripPointPresenter {
   };
 
   #replacePointToForm = () => {
-    // нажате на Esc для закрытия формы
     this.#pointEditorComponent.setEscKeydownListener(this.#replaceFormToPoint);
     this.#changeMode();
     this.#mode = Mode.EDITING;
@@ -93,8 +125,6 @@ export default class TripPointPresenter {
       isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH,
       update,
     );
-
-    this.#replaceFormToPoint();
   };
 
   destroy = () => {
