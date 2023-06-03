@@ -35,35 +35,36 @@ const createDestinationTemplate = (destination, availableDestinations) => {
 };
 
 const createOffersTemplate = (type, offers, availableOffers) => {
-  let template = '';
-  const allOffers = Object.values(availableOffers);
-  allOffers.forEach(({type: pointType, offers: typeOffers}) => {
-    if (type === pointType) {
-      typeOffers.forEach(({id, title, price}) => {
-        const isChecked = (offers.includes(id))
-          ? 'checked'
-          : '';
-        template += `
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="${id}" type="checkbox" name="${title}" ${isChecked}>
-            <label class="event__offer-label" for="${id}">
-              <span class="event__offer-title">${title}</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">${price}</span>
-            </label>
-          </div>
-        `;
-      });
-    }
-  });
-  return (template) ? `
-  <section class="event__section  event__section--offers">
-    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-    <div class="event__available-offers">
-      ${template}
-    </div>
-  </section>
-    ` : '';
+  const template = Object.values(availableOffers)
+    .map(({ type: pointType, offers: typeOffers }) => {
+      if (type === pointType) {
+        return typeOffers.map(({ id, title, price }) => {
+          const isChecked = offers.includes(id) ? 'checked' : '';
+          return `
+            <div class="event__offer-selector">
+              <input class="event__offer-checkbox visually-hidden" id="${id}" type="checkbox" name="${title}" ${isChecked}>
+              <label class="event__offer-label" for="${id}">
+                <span class="event__offer-title">${title}</span>
+                &plus;&euro;&nbsp;
+                <span class="event__offer-price">${price}</span>
+              </label>
+            </div>
+          `;
+        }).join('');
+      }
+      return [];
+    }).join('');
+
+  return template
+    ? `
+      <section class="event__section event__section--offers">
+        <h3 class="event__section-title event__section-title--offers">Offers</h3>
+        <div class="event__available-offers">
+          ${template}
+        </div>
+      </section>
+      `
+    : '';
 };
 
 const createTypeImageTemplate = (currentType, availableOffers) => Object.values(availableOffers)
@@ -77,13 +78,8 @@ const createTypeImageTemplate = (currentType, availableOffers) => Object.values(
     `;
   }).join('');
 
-const createDestinationListTemplate = (availableDestinations) => {
-  let template = '';
-  Object.values(availableDestinations).forEach((destination) => {
-    template += `<option value="${destination.name}"></option>`;
-  });
-  return template;
-};
+const createDestinationListTemplate = (availableDestinations) => Object.values(availableDestinations)
+  .map((destination) => `<option value="${destination.name}"></option>`).join('');
 
 const createPointEditorTemplate = (data, isPointNew, availableDestinations, availableOffers) => {
   const {dateFrom, dateTo, offers, type, destination, basePrice, isDestination, isDeleting, isSaving} = data;
