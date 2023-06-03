@@ -97,19 +97,31 @@ export default class TripPresenter {
     }
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case USER_ACTION.UPDATE_TASK:
         this.#tripPointPresenter.get(update.id).setSaving();
-        this.#tripPointsModel.updatePoint(updateType, update);
+        try {
+          this.#tripPointsModel.updatePoint(updateType, update);
+        } catch(err) {
+          this.#tripPointPresenter.get(update.id).setAborting();
+        }
         break;
       case USER_ACTION.ADD_TASK:
         this.#newPointPresenter.setSaving();
-        this.#tripPointsModel.addPoint(updateType, update);
+        try {
+          this.#tripPointsModel.addPoint(updateType, update);
+        } catch(err) {
+          this.#newPointPresenter.setAborting();
+        }
         break;
       case USER_ACTION.DELETE_TASK:
         this.#tripPointPresenter.get(update.id).setDeleting();
-        this.#tripPointsModel.deletePoint(updateType, update);
+        try {
+          this.#tripPointsModel.deletePoint(updateType, update);
+        } catch(err) {
+          this.#tripPointPresenter.get(update.id).setAborting();
+        }
         break;
     }
   };
