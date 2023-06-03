@@ -50,19 +50,19 @@ export default class TripPresenter {
   get points() {
     this.#filterType = this.#filterModel.filter;
     const points = this.#tripPointsModel.points;
-    const filteredTasks = filter[this.#filterType](points);
+    const filteredPoints = filter[this.#filterType](points);
 
     switch (this.#sortType) {
       case SORT_TYPE.DAY:
-        return filteredTasks.sort(sortDays);
+        return filteredPoints.sort(sortDays);
       case SORT_TYPE.PRICE:
-        return filteredTasks.sort(sortPrices);
+        return filteredPoints.sort(sortPrices);
     }
 
-    return filteredTasks;
+    return filteredPoints;
   }
 
-  createTask = (callback) => {
+  createPoint = (callback) => {
     this.#sortType = SORT_TYPE.DAY;
     this.#filterModel.setFilter(UPDATE_TYPE.MAJOR, FILTER_TYPE.EVERYTHING);
     this.#newPointPresenter.init(callback, this.#tripPointsModel.destinations, this.#tripPointsModel.offers);
@@ -82,7 +82,7 @@ export default class TripPresenter {
   };
 
   #renderPoints = () => {
-    this.points.forEach((task) => this.#renderPoint(task));
+    this.points.forEach((point) => this.#renderPoint(point));
   };
 
   #renderLoading = () => {

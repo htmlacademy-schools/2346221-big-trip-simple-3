@@ -29,7 +29,7 @@ const handleNewPointFormClose = () => {
 };
 
 const handleNewPointButtonClick = () => {
-  tripPresenter.createTask(handleNewPointFormClose);
+  tripPresenter.createPoint(handleNewPointFormClose);
   newPointButtonComponent.element.disabled = true;
 };
 
