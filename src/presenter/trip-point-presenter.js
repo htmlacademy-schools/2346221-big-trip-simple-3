@@ -118,6 +118,7 @@ export default class TripPointPresenter {
   #handleFormSubmit = (update) => {
     const isMinorUpdate =
       !isDatesEqual(this.#point.dateTo, update.dateTo) ||
+      !isDatesEqual(this.#point.dateFrom, update.dateFrom) ||
       this.#point.basePrice !== update.basePrice;
 
     this.#changeData(
