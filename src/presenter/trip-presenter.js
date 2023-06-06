@@ -112,7 +112,7 @@ export default class TripPresenter {
       case UserAction.UPDATE_POINT:
         this.#tripPointPresenter.get(update.id).setSaving();
         try {
-          this.#tripPointsModel.updatePoint(updateType, update);
+          await this.#tripPointsModel.updatePoint(updateType, update);
         } catch(err) {
           this.#tripPointPresenter.get(update.id).setAborting();
         }
@@ -120,7 +120,7 @@ export default class TripPresenter {
       case UserAction.ADD_POINT:
         this.#newPointPresenter.setSaving();
         try {
-          this.#tripPointsModel.addPoint(updateType, update);
+          await this.#tripPointsModel.addPoint(updateType, update);
         } catch(err) {
           this.#newPointPresenter.setAborting();
         }
@@ -128,7 +128,7 @@ export default class TripPresenter {
       case UserAction.DELETE_POINT:
         this.#tripPointPresenter.get(update.id).setDeleting();
         try {
-          this.#tripPointsModel.deletePoint(updateType, update);
+          await this.#tripPointsModel.deletePoint(updateType, update);
         } catch(err) {
           this.#tripPointPresenter.get(update.id).setAborting();
         }
