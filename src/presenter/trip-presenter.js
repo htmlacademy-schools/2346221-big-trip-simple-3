@@ -68,8 +68,8 @@ export default class TripPresenter {
     this.#newPointPresenter.init(callback, this.#tripPointsModel.destinations, this.#tripPointsModel.offers);
   };
 
-  #renderEmptyList = () => {
-    this.#emptyListComponent = new EmptyListView(this.#filterType);
+  #renderEmptyList = (isError = false) => {
+    this.#emptyListComponent = new EmptyListView(this.#filterType, isError);
     render(this.#emptyListComponent, this.#container);
   };
 
@@ -154,6 +154,11 @@ export default class TripPresenter {
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderBoard();
+        break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderEmptyList(true);
         break;
     }
   };

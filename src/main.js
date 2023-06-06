@@ -34,6 +34,9 @@ const handleNewPointButtonClick = () => {
 };
 
 tripPointsModel.init()
+  .catch(() => {
+    newPointButtonComponent.element.disabled = true;
+  })
   .finally(() => {
     render(newPointButtonComponent, buttonSection);
     newPointButtonComponent.setClickListener(handleNewPointButtonClick);
