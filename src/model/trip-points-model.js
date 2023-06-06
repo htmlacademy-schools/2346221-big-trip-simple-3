@@ -26,6 +26,8 @@ export default class TripPointsModel extends Observable {
       this.#destinations = null;
       this.#offers = null;
       this._notify(UpdateType.ERROR);
+
+      throw new Error(err);
     }
   }
 
